@@ -1,120 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Patient Registration Form</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"></script>
-        <style>
-            body {
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background-color: #f0f4f8;
-                margin: 0;
-                padding: 0;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-            }
-            .container {
-                background-color: #ffffff;
-                border-radius: 12px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                padding: 25px;
-                width: 800px;
-                max-height: 90vh;
-                overflow-y: auto;
-            }
-            h1 {
-                font-size: 26px;
-                margin-bottom: 25px;
-                color: #1f2937;
-                text-align: center;
-            }
-            h1 span {
-                border-bottom: 3px solid #0ea5e9;
-                padding-bottom: 5px;
-            }
-            .section-title {
-                font-size: 20px;
-                margin-top: 30px;
-                margin-bottom: 15px;
-                color: #1d4ed8;
-                font-weight: bold;
-            }
-            .form-group {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 20px;
-            }
-            .form-group .form-field {
-                flex: 1;
-                min-width: 240px;
-            }
-            .form-field label {
-                display: block;
-                margin-bottom: 5px;
-                font-weight: bold;
-                color: #4b5563;
-            }
-            .form-field input, .form-field select, .form-field textarea {
-                width: 100%;
-                padding: 12px;
-                border: 1px solid #d1d5db;
-                border-radius: 8px;
-                box-sizing: border-box;
-                background-color: #f9fafb;
-                color: #1f2937;
-            }
-            .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
-                outline: none;
-                border-color: #0ea5e9;
-                background-color: #ffffff;
-                box-shadow: 0 0 5px rgba(14, 165, 233, 0.3);
-            }
-            .form-field i {
-                position: absolute;
-                right: 15px;
-                top: 38px;
-                color: #9ca3af;
-            }
-            .form-field {
-                position: relative;
-            }
-            .btn {
-                background-color: #0ea5e9;
-                color: #ffffff;
-                padding: 12px 25px;
-                border: none;
-                border-radius: 8px;
-                cursor: pointer;
-                font-size: 16px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 100%;
-                margin-top: 30px;
-                transition: background-color 0.3s ease;
-            }
-            .btn i {
-                margin-left: 10px;
-            }
-            .btn:hover {
-                background-color: #0284c7;
-            }
-            /* Additional styling for sections */
-            .form-field textarea {
-                resize: vertical;
-                min-height: 80px;
-            }
-            .form-group .small-field {
-                flex: 0 0 48%;
-            }
-        </style>
-    </head>
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Patient Record Management</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 25px;
+            width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 26px;
+            margin-bottom: 25px;
+            color: #1f2937;
+            text-align: center;
+        }
+        h1 span {
+            border-bottom: 3px solid #0ea5e9;
+            padding-bottom: 5px;
+        }
+        .section-title {
+            font-size: 20px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: #1d4ed8;
+            font-weight: bold;
+        }
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .form-group .form-field {
+            flex: 1;
+            min-width: 240px;
+        }
+        .form-field label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #4b5563;
+        }
+        .form-field input, .form-field select, .form-field textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-sizing: border-box;
+            background-color: #f9fafb;
+            color: #1f2937;
+        }
+        .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            background-color: #ffffff;
+            box-shadow: 0 0 5px rgba(14, 165, 233, 0.3);
+        }
+        .form-field i {
+            position: absolute;
+            right: 15px;
+            top: 38px;
+            color: #9ca3af;
+        }
+        .form-field {
+            position: relative;
+        }
+        .btn {
+            background-color: #0ea5e9;
+            color: #ffffff;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: 30px;
+            transition: background-color 0.3s ease;
+        }
+        .btn i {
+            margin-left: 10px;
+        }
+        .btn:hover {
+            background-color: #0284c7;
+        }
+        /* Additional styling for sections */
+        .form-field textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .form-group .small-field {
+            flex: 0 0 48%;
+        }
+    </style>
+</head>
 <body>
+    <h1>Patient Record Management</h1>
+
+    <!-- Section to Add Patient Record -->
+    <div class="container">
+        <h2>Add Patient Record</h2>
+        <label for="patientName">Patient Name:</label>
+        <input type="text" id="patientName" placeholder="Enter patient name"><br><br>
+
+        <label for="symptoms">Symptoms:</label>
+        <input type="text" id="symptoms" placeholder="Enter symptoms"><br><br>
+
+        <button id="submitReport">Submit Report</button>
+        <h3 id="confirmationMessage"></h3>
+    </div>
+
+    <!-- Section to Fetch Patient Record -->
+    <div class="container">
+        <h2>Fetch Patient Record</h2>
+        <label for="patientID">Patient ID:</label>
+        <input type="number" id="patientID" placeholder="Enter patient ID"><br><br>
+
+        <button id="fetchRecord">Fetch Patient Record</button>
+        <h3 id="fetchedRecord"></h3>
+    </div>
+
+    <!-- Section to View All Patients and Select from List -->
+    <div class="container">
+        <h2>View All Patients</h2>
+        <label for="totalPatients">Total Patients:</label>
+        <span id="totalPatients"></span><br><br>
+
+        <label for="patientList">Select Patient:</label>
+        <select id="patientList">
+            <option value="">Select a patient...</option>
+        </select>
+    </div>
+
+    <!-- Patient Registration Form -->
     <div class="container">
         <h1><span>Patient Registration</span></h1>
 
@@ -123,7 +161,7 @@
         <div class="form-group">
             <div class="form-field">
                 <label for="full-name">Full Name</label>
-                <input type="text" id="patientName" placeholder="Enter full name">
+                <input type="text" id="full-name" placeholder="Enter full name">
             </div>
             <div class="form-field">
                 <label for="dob">Date of Birth</label>
@@ -163,15 +201,11 @@
             </div>
             <div class="form-field">
                 <label for="chronic-conditions">Chronic Conditions</label>
-                <input type="text" id="symptoms" placeholder="E.g., diabetes, hypertension">
+                <input type="text" id="chronic-conditions" placeholder="E.g., diabetes, hypertension">
             </div>
             <div class="form-field">
                 <label for="medications">Current Medications</label>
                 <textarea id="medications" rows="3" placeholder="List current medications"></textarea>
-            </div>
-            <div class="form-field">
-                <label for="symptoms">Symptoms</label>
-                <textarea id="symptoms" rows="3" placeholder="Enter current symptoms"></textarea>
             </div>
         </div>
 
@@ -205,10 +239,12 @@
             </div>
         </div>
 
-        <button id="submitReport" class="btn">Submit <i class="fas fa-arrow-right"></i></button>
+        <!-- Moved submit button to the end of the form -->
+        <button id="submitReport" class="btn">Submit Report <i class="fas fa-paper-plane"></i></button>
         <h3 id="confirmationMessage"></h3>
     </div>
 
+    <!-- Script linking to your JS file -->
     <script src="app.js"></script>
 </body>
 </html>

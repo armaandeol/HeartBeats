@@ -1,0 +1,384 @@
+<html>
+<head>
+    <title>
+        Profile
+    </title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e9ecef; /* Light background */
+        }
+        .container {
+            background-color: #ffffff; /* White background for the container */
+            padding: 20px;
+            max-width: 400px;
+            margin: 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header i {
+            font-size: 24px;
+            cursor: pointer; /* Make the icon clickable */
+            color: #007bff; /* Blue color for the icon */
+        }
+        .header .edit {
+            color: #dc3545; /* Red color for edit text */
+            font-size: 16px;
+            cursor: pointer; /* Make the edit text clickable */
+        }
+        .header .title {
+            flex-grow: 1;
+            text-align: left;
+            margin-left: 10px;
+            font-weight: bold;
+            color: #343a40; /* Dark gray for title */
+        }
+        .profile {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .profile img {
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            margin-right: 20px;
+        }
+        .profile-info {
+            font-size: 16px;
+            color: #495057; /* Darker gray for profile info */
+        }
+        .profile-info .name {
+            font-weight: bold;
+            color: #343a40; /* Dark gray */
+        }
+        .profile-info .details {
+            color: #868e96; /* Light gray for details */
+        }
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            border-bottom: 2px solid #007bff; /* Blue bottom border */
+        }
+        .tabs div {
+            padding: 10px 0;
+            font-size: 16px;
+            color: #868e96; /* Light gray */
+            cursor: pointer;
+        }
+        .tabs .active {
+            color: #007bff; /* Blue color for active tab */
+            border-bottom: 2px solid #007bff; /* Blue border for active tab */
+        }
+        .info {
+            margin-top: 20px;
+        }
+        .info .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .info .item .label {
+            font-weight: bold;
+            color: #343a40; /* Dark gray for labels */
+        }
+        .info .item .value {
+            color: #495057; /* Darker gray for values */
+        }
+        .info .item .verify {
+            color: #007bff; /* Blue color for verify link */
+            cursor: pointer;
+        }
+        .health-trends, .lab-history {
+            margin-top: 20px;
+        }
+        .health-trends .title, .lab-history .title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #343a40; /* Dark gray for titles */
+        }
+        .health-trends .trends {
+            display: flex;
+            justify-content: space-around;
+        }
+        .health-trends .trend {
+            text-align: center;
+        }
+        .health-trends .trend img {
+            width: 40px;
+            height: 40px;
+        }
+        .health-trends .trend .percentage {
+            font-weight: bold;
+            color: #28a745; /* Green for percentage */
+        }
+        .health-trends .trend .status {
+            color: #868e96; /* Light gray for status */
+        }
+        .lab-history .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .lab-history .item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .lab-history .item .details {
+            flex-grow: 1;
+        }
+        .lab-history .item .details .name {
+            font-weight: bold;
+            color: #343a40; /* Dark gray for lab test name */
+        }
+        .lab-history .item .details .lab {
+            color: #868e96; /* Light gray for lab name */
+        }
+        .lab-history .item .price {
+            font-weight: bold;
+            color: #28a745; /* Green for price */
+        }
+        .hidden {
+            display: none;
+        }
+        /* Edit Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+            padding-top: 60px; /* Location of the box */
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            border-radius: 10px; /* Rounded corners for modal */
+        }
+        .close {
+            color: #dc3545; /* Red color for close button */
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="dashboard.html"><i class="fas fa-arrow-left"></i></a> <!-- Add link for back navigation -->
+            <span class="title">Profile</span>
+            <span class="edit" onclick="openEditModal()">Edit</span> <!-- Open edit modal -->
+        </div>
+        <div class="profile">
+            <img alt="Profile picture of a person" height="60" src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-RcpoXHkzChYnDbFAyeQ8tamr/user-ehrvabJ3DufsCu8YJ7PqY5gl/img-uJRuPj4YvgTktaYS0PhmT6AE.png?st=2024-09-29T00%3A38%3A19Z&amp;se=2024-09-29T02%3A38%3A19Z&amp;sp=r&amp;sv=2024-08-04&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2024-09-29T01%3A15%3A27Z&amp;ske=2024-09-30T01%3A15%3A27Z&amp;sks=b&amp;skv=2024-08-04&amp;sig=D4rgNcc256CWfYBhlJivTK3rC0dBhkvQG02%2B5U29fAY%3D" width="60"/>
+            <div class="profile-info">
+                <div class="name">Armaan Deol ( You )</div>
+                <div class="details">29/08/2004 - 20 Yrs old</div>
+            </div>
+        </div>
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('personal')">Personal</div>
+            <div class="tab" onclick="showTab('medical')">Medical History</div>
+            <div class="tab" onclick="showTab('social')">Social History</div>
+            <div class="tab" onclick="showTab('family')">Family</div>
+        </div>
+
+        <!-- Personal Info Section -->
+        <div id="personal" class="info">
+            <div class="item">
+                <div class="label">Email</div>
+                <div class="value">armaan.deol@jhu.edu</div>
+            </div>
+            <div class="item">
+                <div class="label">Phone</div>
+                <div class="value">+1 456 789 0234</div>
+            </div>
+            <div class="item">
+                <div class="label">Address</div>
+                <div class="value">123 Elm Street, Springfield</div>
+            </div>
+            <div class="item">
+                <div class="label">Gender</div>
+                <div class="value">Male</div>
+            </div>
+            <div class="item">
+                <div class="label">Blood Group</div>
+                <div class="value">O+</div>
+                <div class="verify">Verify</div>
+            </div>
+            <div class="item">
+                <div class="label">Height</div>
+                <div class="value">6'1"</div>
+            </div>
+            <div class="item">
+                <div class="label">Weight</div>
+                <div class="value">180 lbs</div>
+            </div>
+        </div>
+
+        <!-- Medical History Section -->
+        <div id="medical" class="info hidden">
+            <div class="item">
+                <div class="label">Last Checkup</div>
+                <div class="value">05/10/2024</div>
+            </div>
+            <div class="item">
+                <div class="label">Allergies</div>
+                <div class="value">Peanuts, Shellfish</div>
+            </div>
+            <div class="item">
+                <div class="label">Chronic Illnesses</div>
+                <div class="value">Asthma</div>
+            </div>
+        </div>
+
+        <!-- Social History Section -->
+        <div id="social" class="info hidden">
+            <div class="item">
+                <div class="label">Smoker</div>
+                <div class="value">No</div>
+            </div>
+            <div class="item">
+                <div class="label">Drinks Alcohol</div>
+                <div class="value">Occasionally</div>
+            </div>
+        </div>
+
+        <!-- Family History Section -->
+        <div id="family" class="info hidden">
+            <div class="item">
+                <div class="label">Father</div>
+                <div class="value">Diabetes</div>
+            </div>
+            <div class="item">
+                <div class="label">Mother</div>
+                <div class="value">Heart Disease</div>
+            </div>
+        </div>
+
+        <!-- Health Trends Section -->
+        <div class="health-trends">
+            <div class="title">Health Trends</div>
+            <div class="trends">
+                <div class="trend">
+                    <img alt="Blood Pressure" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Blood_Pressure.svg/1024px-Blood_Pressure.svg.png"/>
+                    <div class="percentage">120/80</div>
+                    <div class="status">Normal</div>
+                </div>
+                <div class="trend">
+                    <img alt="Glucose" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Glucose_Icon.svg/1024px-Glucose_Icon.svg.png"/>
+                    <div class="percentage">90 mg/dL</div>
+                    <div class="status">Normal</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lab History Section -->
+        <div class="lab-history">
+            <div class="title">Lab History</div>
+            <div class="item">
+                <img alt="Blood Test" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Blood_Test_Icon.svg/1024px-Blood_Test_Icon.svg.png"/>
+                <div class="details">
+                    <div class="name">Complete Blood Count</div>
+                    <div class="lab">LabCorp</div>
+                </div>
+                <div class="price">$45</div>
+            </div>
+            <div class="item">
+                <img alt="X-Ray" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/X-ray_icon.svg/1024px-X-ray_icon.svg.png"/>
+                <div class="details">
+                    <div class="name">Chest X-Ray</div>
+                    <div class="lab">Quest Diagnostics</div>
+                </div>
+                <div class="price">$80</div>
+            </div>
+        </div>
+
+        <!-- Edit Modal -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeEditModal()">&times;</span>
+                <h2>Edit Profile</h2>
+                <form id="editForm">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" value="armaan.deol@jhu.edu"><br><br>
+                    <label for="phone">Phone:</label>
+                    <input type="tel" id="phone" name="phone" value="+1 456 789 0234"><br><br>
+                    <label for="address">Address:</label>
+                    <input type="text" id="address" name="address" value="123 Elm Street, Springfield"><br><br>
+                    <label for="gender">Gender:</label>
+                    <select id="gender" name="gender">
+                        <option value="Male" selected>Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select><br><br>
+                    <label for="bloodGroup">Blood Group:</label>
+                    <input type="text" id="bloodGroup" name="bloodGroup" value="O+"><br><br>
+                    <label for="height">Height:</label>
+                    <input type="text" id="height" name="height" value="6'1"><br><br>
+                    <label for="weight">Weight:</label>
+                    <input type="text" id="weight" name="weight" value="180 lbs"><br><br>
+                    <button type="submit">Save Changes</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function showTab(tab) {
+            const tabs = ['personal', 'medical', 'social', 'family'];
+            tabs.forEach(t => {
+                document.getElementById(t).classList.toggle('hidden', t !== tab);
+            });
+            document.querySelectorAll('.tabs .tab').forEach(t => {
+                t.classList.toggle('active', t.innerText.toLowerCase() === tab);
+            });
+        }
+
+        function openEditModal() {
+            document.getElementById("editModal").style.display = "block";
+        }
+
+        function closeEditModal() {
+            document.getElementById("editModal").style.display = "none";
+        }
+
+        // Close the modal if the user clicks outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById("editModal");
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

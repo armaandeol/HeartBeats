@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOS Page</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #000000; /* Dark background for contrast */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .sos-container {
+      background-color: #ff3b3b; /* Red background for alert */
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      padding: 40px;
+      width: 400px;
+      max-width: 90%;
+      text-align: center;
+      border: 2px solid #ff5f6d;
+      animation: pulse 1.5s infinite ease-in-out;
+      color: white; /* Make text white for readability */
+    }
+    .sos-header {
+      color: #ffffff; /* White header text */
+      font-size: 3em;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Enhanced shadow for better visibility */
+    }
+    .sos-message {
+      font-size: 1.3em;
+      margin-bottom: 30px;
+      color: #f1f1f1; /* Softer white for message text */
+    }
+    .timer {
+      font-size: 2.5em;
+      color: #ffffff; /* White for timer */
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    .cancel-btn {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 1.2em;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .cancel-btn:hover {
+      background-color: #d32f2f;
+    }
+    .cancel-btn:disabled {
+      background-color: grey;
+      cursor: not-allowed;
+    }
+    /* Progress bar styling */
+    .progress-bar-container {
+      background-color: #ddd;
+      border-radius: 25px;
+      margin-bottom: 20px;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background-color: #ff5f6d;
+      border-radius: 25px;
+    }
+    /* Emergency contacts as stylish buttons */
+    .contact-btn {
+      display: block;
+      margin: 15px auto;
+      background-color: #ff5f6d;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 1.2em;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      text-decoration: none;
+      width: 80%;
+      transition: background-color 0.3s ease;
+    }
+    .contact-btn:hover {
+      background-color: #d43b50;
+    }
+    /* Dynamic background animation */
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="sos-container">
+  <h1 class="sos-header">SOS Alert</h1>
+  <p class="sos-message">Emergency detected! Redirecting in <span class="timer" id="timer">5</span> seconds...</p>
+  
+  <!-- Progress bar -->
+  <div class="progress-bar-container">
+    <div id="progressBar" class="progress-bar"></div>
+  </div>
+
+  <button id="cancelBtn" class="cancel-btn" onclick="cancelRedirect()">Cancel SOS</button>
+  
+  <!-- Stylish Emergency contact buttons -->
+  <a href="tel:7428512005" class="contact-btn">Call Contact 1</a>
+  <a href="tel:9667660734" class="contact-btn">Call Contact 2</a>
+
+  <!-- Display current time -->
+  <p id="time"></p>
+</div>
+
+<audio id="sosSound" autoplay loop>
+  <source src="alarm.mp3" type="audio/mp3">
+  Your browser does not support the audio element.
+</audio>
+
+<script>
+  let countdown = 5;
+  let timerInterval = setInterval(() => {
+    countdown--;
+    document.getElementById("timer").textContent = countdown;
+
+    // Update progress bar
+    document.getElementById('progressBar').style.width = (countdown * 20) + '%';
+
+    if (countdown === 0) {
+      clearInterval(timerInterval);
+      window.location.href = "emergency-page.html"; // Redirect to the emergency page
+    }
+  }, 1000);
+
+  // Cancel redirect function
+  function cancelRedirect() {
+    clearInterval(timerInterval);
+    document.getElementById("timer").textContent = "Cancelled";
+    document.getElementById("cancelBtn").disabled = true;
+    document.getElementById("cancelBtn").textContent = "SOS Cancelled";
+    alert("SOS Cancelled!");
+
+    // Stop alarm sound
+    document.getElementById("sosSound").pause();
+    document.getElementById("sosSound").currentTime = 0;
+
+    // Stop vibration
+    navigator.vibrate(0);
+  }
+
+  // Vibrate during countdown
+  if (navigator.vibrate) {
+    let vibrateInterval = setInterval(() => {
+      navigator.vibrate([500, 300, 500]);
+    }, 1000);
+
+    setTimeout(() => clearInterval(vibrateInterval), 5000);
+  }
+
+  // Display the current time and date
+  function updateTime() {
+    const currentTime = new Date().toLocaleString();
+    document.getElementById('time').textContent = `Time: ${currentTime}`;
+  }
+  updateTime();
+  setInterval(updateTime, 1000); // Update every second
+</script>
+
+</body>
+</html>

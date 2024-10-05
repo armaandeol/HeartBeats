@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realistic Organ & Tissue Donation Form</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet"/>
+    <style>
+        body {
+            background-color: #f3f4f6;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            color: #1d4ed8;
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #1d4ed8;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #1d4ed8;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 2px solid #dbeafe;
+            background-color: #fff;
+            box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        button {
+            background-color: #1d4ed8;
+            color: white;
+            font-size: 1.2rem;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0e2e5a;
+        }
+
+        .consent {
+            font-size: 0.9rem;
+            margin-top: -10px;
+            color: #555;
+        }
+
+        .section-header {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Organ & Tissue Donation Form</h1>
+        <p>Please fill out the following form to register your consent for organ and tissue donation. Your generosity could help save lives. All personal information will be kept confidential.</p>
+        
+        <form action="/submit-donation" method="POST">
+            <!-- Personal Information -->
+            <section>
+                <h2>Personal Information</h2>
+                <label for="name">Full Name (as per ID)</label>
+                <input type="text" id="name" name="name" required placeholder="Enter your full legal name">
+
+                <label for="dob">Date of Birth</label>
+                <input type="date" id="dob" name="dob" required>
+
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required placeholder="Your email address">
+
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" required placeholder="Your contact number">
+
+                <label for="address">Residential Address</label>
+                <input type="text" id="address" name="address" required placeholder="Your full address">
+
+                <label for="idNumber">Government ID Number (e.g., SSN, Passport)</label>
+                <input type="text" id="idNumber" name="idNumber" required placeholder="ID Number">
+            </section>
+
+            <!-- Next of Kin Information -->
+            <section>
+                <h2>Next of Kin Information</h2>
+                <label for="nextOfKinName">Next of Kin Full Name</label>
+                <input type="text" id="nextOfKinName" name="nextOfKinName" required placeholder="Name of closest family member">
+
+                <label for="nextOfKinPhone">Next of Kin Contact Number</label>
+                <input type="tel" id="nextOfKinPhone" name="nextOfKinPhone" required placeholder="Contact number of next of kin">
+
+                <label for="nextOfKinRelationship">Relationship to Next of Kin</label>
+                <input type="text" id="nextOfKinRelationship" name="nextOfKinRelationship" required placeholder="Relationship (e.g., spouse, parent)">
+            </section>
+
+            <!-- Medical History -->
+            <section>
+                <h2>Medical History</h2>
+                <label for="bloodType">Blood Type</label>
+                <select id="bloodType" name="bloodType" required>
+                    <option value="">Select your blood type</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                </select>
+
+                <label for="medicalConditions">Medical Conditions (if any)</label>
+                <textarea id="medicalConditions" name="medicalConditions" rows="4" placeholder="List any known medical conditions"></textarea>
+
+                <label for="currentMedications">Current Medications</label>
+                <textarea id="currentMedications" name="currentMedications" rows="3" placeholder="List any current medications you are taking"></textarea>
+
+                <label for="organHistory">Have you previously donated any organs or tissues?</label>
+                <select id="organHistory" name="organHistory" required>
+                    <option value="no">No</option>
+                    <option value="yes">Yes</option>
+                </select>
+            </section>
+
+            <!-- Organ and Tissue Selection -->
+            <section>
+                <h2>Select Organs & Tissues for Donation</h2>
+                <label><input type="checkbox" name="organ" value="Heart"> Heart</label>
+                <label><input type="checkbox" name="organ" value="Lungs"> Lungs</label>
+                <label><input type="checkbox" name="organ" value="Kidneys"> Kidneys</label>
+                <label><input type="checkbox" name="organ" value="Liver"> Liver</label>
+                <label><input type="checkbox" name="organ" value="Pancreas"> Pancreas</label>
+                <label><input type="checkbox" name="organ" value="Tissues"> Tissues (Skin, Bones)</label>
+                <label><input type="checkbox" name="organ" value="Eyes"> Eyes/Corneas</label>
+                <label><input type="checkbox" name="organ" value="Intestines"> Intestines</label>
+            </section>
+
+            <!-- Legal Disclaimers -->
+            <section>
+                <h2>Legal Disclaimers & Privacy Notice</h2>
+                <p>By submitting this form, I confirm that I have read and understood the Organ and Tissue Donation Agreement. I understand that my decision is legally binding and will be honored upon my death unless I choose to withdraw my consent. All personal data provided will be handled in accordance with privacy regulations and will not be shared with third parties without consent.</p>
+                
+                <label class="consent">
+                    <input type="checkbox" required> I agree to the terms and conditions of organ and tissue donation as outlined above.
+                </label>
+
+                <label class="consent">
+                    <input type="checkbox" required> I confirm that I have discussed my decision with my next of kin, who is aware of my wishes.
+                </label>
+            </section>
+
+            <!-- Witness Signature -->
+            <section>
+                <h2>Witness Signature</h2>
+                <label for="witnessName">Witness Full Name</label>
+                <input type="text" id="witnessName" name="witnessName" required placeholder="Full name of witness">
+
+                <label for="witnessContact">Witness Contact Number</label>
+                <input type="tel" id="witnessContact" name="witnessContact" required placeholder="Contact number of witness">
+            </section>
+
+            <!-- Submit Button -->
+            <form action="thankyou.html" method="POST">
+                <!-- Your form fields here -->
+            
+                <!-- Submit Button -->
+                <button type="submit">Submit Donation Form</button>
+            </form>
+        </form>
+    </div>
+    
+</body>
+
+</html>

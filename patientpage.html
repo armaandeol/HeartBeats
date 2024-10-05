@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor in 10 Minutes - Arogya Saarthi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <style>
+        body {
+            background: linear-gradient(145deg, #e3f2fd, #bbdefb);
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .form-container {
+            max-width: 650px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+        }
+
+        .form-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .chatbox-container {
+            margin-top: 20px;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .input-container input {
+            flex-grow: 1;
+            border: 2px solid #38bdf8;
+            border-radius: 10px;
+            padding: 12px;
+            transition: border-color 0.3s;
+            font-size: 16px;
+        }
+
+        .input-container input:focus {
+            border-color: #0ea5e9;
+            outline: none;
+        }
+
+        .input-container button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            transition: transform 0.3s, background-color 0.3s;
+            background: linear-gradient(145deg, #0ea5e9, #0c4a6e);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .input-container button:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-area {
+            height: 350px;
+            overflow-y: auto;
+            border: 2px solid #38bdf8;
+            border-radius: 12px;
+            padding: 15px;
+            background: #f9fafb;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            font-size: 14px;
+        }
+
+        .chat-area .message {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 0.3s ease-in-out;
+        }
+
+        .chat-area .message.user {
+            background-color: #0ea5e9;
+            color: white;
+            align-self: flex-end;
+        }
+
+        .chat-area .message.ai {
+            background-color: #d1fae5;
+            color: #333;
+            align-self: flex-start;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            text-align: center;
+            color: #1e3a8a;
+            margin-bottom: 20px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        label {
+            font-weight: 600;
+        }
+
+        .navbar {
+            background: linear-gradient(145deg, #0c4a6e, #1d4ed8);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar a {
+            color: white;
+            font-weight: 500;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .loading {
+            display: none;
+            font-size: 14px;
+            color: #0ea5e9;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <h1 class="text-xl">Arogya Saarthi</h1>
+        <div>
+            <a href="#about" onclick="openModal()">About</a>
+        </div>
+    </div>
+
+    <!-- Patient Registration Form -->
+    <div class="form-container" id="registration">
+        <h2 class="text-3xl">Patient Registration</h2>
+
+        <div class="mt-4">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" placeholder="Enter your full name" required class="w-full border-gray-300 p-2 rounded-lg shadow-sm">
+        </div>
+
+        <div class="mt-4">
+            <label for="phoneNumber">Phone Number</label>
+            <input type="tel" id="phoneNumber" placeholder="Enter your phone number" required class="w-full border-gray-300 p-2 rounded-lg shadow-sm">
+        </div>
+
+        <div class="mt-4 flex-container flex gap-4">
+            <div class="flex-1">
+                <label for="ageInput">Age</label>
+                <input type="number" id="ageInput" placeholder="Enter your age" min="0" required class="w-full border-gray-300 p-2 rounded-lg shadow-sm">
+            </div>
+            <div class="flex-1">
+                <label for="gender">Biological Sex</label>
+                <select id="gender" required class="w-full border-gray-300 p-2 rounded-lg shadow-sm">
+                    <option value="" disabled selected>Select your gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <button id="continueBtn" class="bg-gradient-to-r from-blue-500 to-blue-700 text-white w-full py-3 rounded-lg animated-button shadow-lg">Continue with AI Advisor</button>
+        </div>
+    </div>
+
+    <!-- AI Advisor Chatbox -->
+    <div class="chatbox-container" id="chat" style="display: none;">
+        <h2><b>Arogya Saarthi - AI Advisor</b></h2>
+        <p class="text-center mb-4">Your virtual advisor for healthcare guidance and recommendations.</p>
+        <div class="chat-area" id="chat-area">
+            <!-- Chat messages will appear here -->
+        </div>
+        <div class="loading" id="loading">AI is typing...</div>
+        <div class="input-container mt-4">
+            <input type="text" id="user-input" placeholder="Describe your symptoms..." required class="p-3 border border-gray-300 rounded-lg shadow-sm">
+            <button onclick="sendMessage()" class="bg-blue-500 text-white p-3 rounded-lg shadow-lg">Send</button>
+            <button onclick="startVoiceInput()" class="bg-gray-500 text-white p-3 rounded-lg shadow-lg">🎤</button>
+        </div>
+    </div>
+
+    <!-- Modal for About -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <h2 class="text-2xl">About Arogya Saarthi</h2>
+            <p class="mt-2">Arogya Saarthi is your trusted AI advisor, helping you navigate healthcare and providing valuable information in real time.</p>
+            <button onclick="closeModal()" class="mt-4 bg-blue-500 text-white p-2 rounded-lg">Close</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('continueBtn').addEventListener('click', function () {
+            document.getElementById('registration').style.display = 'none';
+            document.getElementById('chat').style.display = 'block';
+        });
+
+        function sendMessage() {
+            const userInput = document.getElementById('user-input');
+            const chatArea = document.getElementById('chat-area');
+            const loading = document.getElementById('loading');
+
+            // Create user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user';
+            userMessage.textContent = userInput.value;
+            chatArea.appendChild(userMessage);
+
+            // Show loading message
+            loading.style.display = 'block';
+            chatArea.scrollTop = chatArea.scrollHeight; // Scroll to the bottom
+
+            // AI Response Logic
+            let aiResponse = "I'm here to help! Please tell me more about your symptoms.";
+            const messageLowerCase = userInput.value.toLowerCase();
+
+            if (messageLowerCase.includes("fever")) {
+                aiResponse = "Fever can be a sign of infection. It's important to monitor your temperature and stay hydrated. If it persists or is very high, consider seeing a doctor. You may want to visit an **infectious disease specialist**.";
+            } else if (messageLowerCase.includes("cold")) {
+                aiResponse = "For a cold, it's essential to rest, drink fluids, and consider over-the-counter medications for relief. If symptoms worsen, please seek medical advice. A **general physician** can help.";
+            } else if (messageLowerCase.includes("cough")) {
+                aiResponse = "Coughing can be caused by various factors, including allergies or infection. Stay hydrated and consider cough drops or syrups for relief. If it lasts more than a week, consult a doctor, preferably a **pulmonologist**.";
+            } else if (messageLowerCase.includes("headache")) {
+                aiResponse = "Headaches can result from stress, dehydration, or other factors. Rest, hydration, and over-the-counter pain relief can help. If headaches are frequent or severe, it might be wise to see a healthcare provider, such as a **neurologist**.";
+            } else if (messageLowerCase.includes("nausea")) {
+                aiResponse = "Nausea can be caused by various factors, including dietary choices, motion sickness, or infections. Try to sip clear fluids and rest. If it persists or is accompanied by vomiting, seek medical attention. You may consult a **gastroenterologist**.";
+            } else if (messageLowerCase.includes("fatigue")) {
+                aiResponse = "Fatigue can be a sign of many conditions, including stress, lack of sleep, or underlying health issues. It's essential to ensure you're getting enough rest and nutrition. If it continues, consider consulting a doctor, potentially a **general practitioner**.";
+            } else if (messageLowerCase.includes("diarrhea")) {
+                aiResponse = "Diarrhea can result from infections, food intolerances, or stress. Stay hydrated, as it's essential to replace lost fluids. If it lasts more than a couple of days or is severe, seek medical advice from a **gastroenterologist**.";
+            } else if (messageLowerCase.includes("chest pain")) {
+                aiResponse = "Chest pain can be serious. It may indicate a heart problem or other conditions. If you experience chest pain, especially if it's severe or accompanied by shortness of breath, seek emergency medical help immediately. A **cardiologist** should be consulted.";
+            } else if (messageLowerCase.includes("dizziness")) {
+                aiResponse = "Dizziness can be caused by dehydration, low blood pressure, or inner ear issues. Ensure you're hydrated and try to stand up slowly. If dizziness is persistent or severe, please consult a healthcare professional, possibly an **ENT specialist**.";
+            } else if (messageLowerCase.includes("sore throat")) {
+                aiResponse = "A sore throat can be due to infections or allergies. Gargling with salt water, staying hydrated, and using throat lozenges can provide relief. If it lasts more than a few days or is severe, consider seeing a doctor, ideally an **ENT specialist**.";
+            }
+
+            // Simulate AI response
+            setTimeout(() => {
+                loading.style.display = 'none';
+                const aiMessage = document.createElement('div');
+                aiMessage.className = 'message ai';
+                aiMessage.textContent = aiResponse;
+                chatArea.appendChild(aiMessage);
+                chatArea.scrollTop = chatArea.scrollHeight; // Scroll to the bottom
+            }, 1500); // Simulate delay for AI response
+
+            userInput.value = ''; // Clear input field
+        }
+
+        function startVoiceInput() {
+            // Implement voice input functionality here
+        }
+
+        function openModal() {
+            document.getElementById('aboutModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('aboutModal').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

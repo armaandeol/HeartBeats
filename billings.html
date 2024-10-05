@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Arogya Billing and Report System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jsPDF CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        /* Custom styles to enhance the fancy and mind-blowing design */
+        body {
+            background-color: #F4F7FA;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(90deg, #007BFF 0%, #0056b3 100%);
+        }
+
+        .btn-animated {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .btn-animated:hover {
+            transform: scale(1.05);
+        }
+
+        .fancy-border {
+            border: 2px solid #007BFF;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-header {
+            background-color: #0056b3;
+            color: white;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased">
+
+    <!-- Page Header -->
+    <header class="gradient-bg text-white text-center py-4 shadow-lg">
+        <h1 class="text-3xl font-bold uppercase">Arogya Billing and Report System</h1>
+        <p class="text-sm">Providing fast and accurate billing and reporting for our patients</p>
+    </header>
+
+    <!-- Main Content Section -->
+    <main class="container mx-auto mt-8 mb-12 px-6">
+        <!-- Billing Information Section -->
+        <section class="fancy-border bg-white shadow-lg">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Billing Information</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-gray-700">Invoice ID</label>
+                    <input type="text" id="invoice-id" placeholder="INV-123456" class="border border-gray-300 rounded-lg w-full p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-gray-700">Bill Date</label>
+                    <input type="date" id="bill-date" class="border border-gray-300 rounded-lg w-full p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+            <button id="generate-report" class="btn-animated bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg mt-4">
+                Generate Report
+            </button>
+        </section>
+
+        <!-- Billing Items Section -->
+        <section class="mt-8 fancy-border bg-white shadow-lg">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Billing Items</h2>
+            <table class="min-w-full bg-white border border-gray-300">
+                <thead class="table-header">
+                    <tr>
+                        <th class="text-left p-3 border">Item</th>
+                        <th class="text-left p-3 border">Unit Price</th>
+                        <th class="text-left p-3 border">Quantity</th>
+                        <th class="text-left p-3 border">Total</th>
+                    </tr>
+                </thead>
+                <tbody id="billing-items">
+                    <tr>
+                        <td class="p-3 border">Consultation</td>
+                        <td class="p-3 border">₹500</td>
+                        <td class="p-3 border">1</td>
+                        <td class="p-3 border">₹500</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 border">X-Ray</td>
+                        <td class="p-3 border">₹1,000</td>
+                        <td class="p-3 border">1</td>
+                        <td class="p-3 border">₹1,000</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 border">Blood Test</td>
+                        <td class="p-3 border">₹750</td>
+                        <td class="p-3 border">1</td>
+                        <td class="p-3 border">₹750</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 border">MRI Scan</td>
+                        <td class="p-3 border">₹3,500</td>
+                        <td class="p-3 border">1</td>
+                        <td class="p-3 border">₹3,500</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Summary Section -->
+        <section class="mt-8 fancy-border bg-white shadow-lg">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Payment Summary</h2>
+            <div class="flex justify-between items-center">
+                <div class="text-lg">Subtotal:</div>
+                <div class="text-lg" id="subtotal">₹5,750</div>
+            </div>
+            <div class="flex justify-between items-center mt-2">
+                <div class="text-lg">Discount:</div>
+                <div class="text-lg">₹0</div>
+            </div>
+            <div class="flex justify-between items-center mt-4">
+                <div class="text-lg font-bold">Total:</div>
+                <div class="text-lg font-bold" id="total">₹5,750</div>
+            </div>
+        </section>
+
+        <!-- Button Section -->
+        <div class="flex justify-end mt-6 space-x-4">
+            <button class="btn-animated bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition" id="save-button">
+                Save
+            </button>
+            <button class="btn-animated bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded-lg transition">
+                Save & Print
+            </button>
+            <button class="btn-animated bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition" id="print-button">
+                Print
+            </button>
+        </div>
+
+        <!-- Report Section -->
+        <section class="mt-8 fancy-border bg-white shadow-lg">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Generate Reports</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-gray-700">Select Date Range</label>
+                    <input type="date" id="start-date" class="border border-gray-300 rounded-lg w-full p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="date" id="end-date" class="border border-gray-300 rounded-lg w-full p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-gray-700">Invoice ID (optional)</label>
+                    <input type="text" id="report-invoice-id" placeholder="INV-123456" class="border border-gray-300 rounded-lg w-full p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+            <button id="generate-report-summary" class="btn-animated bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg mt-4">
+                Generate Summary Report
+            </button>
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="gradient-bg text-white text-center py-6">
+        <p class="text-sm">&copy; 2024 Arogya Billing and Report System | All Rights Reserved</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Function to generate PDF report
+        function generatePDF(invoiceId, billDate, items, total) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // PDF Title
+            doc.setFontSize(18);
+            doc.text('Arogya Billing System - Invoice Report', 20, 20);
+
+            // Invoice Details
+            doc.setFontSize(12);
+            doc.text(`Invoice ID: ${invoiceId}`, 20, 30);
+            doc.text(`Bill Date: ${billDate}`, 20, 40);
+            doc.text('Billing Items:', 20, 50);
+
+            // Add Billing Items to PDF
+            let y = 60;
+            items.forEach(item => {
+                doc.text(`${item.name} - ₹${item.unitPrice} x ${item.quantity} = ₹${item.total}`, 20, y);
+                y += 10;
+            });
+
+            // Summary
+            doc.text(`Subtotal: ₹${total}`, 20, y);
+            doc.save(`invoice_${invoiceId}.pdf`);
+        }
+
+        // Event listener for generating report
+        document.getElementById('generate-report').addEventListener('click', function() {
+            const invoiceId = document.getElementById('invoice-id').value;
+            const billDate = document.getElementById('bill-date').value;
+
+            // Define sample billing items
+            const billingItems = [
+                { name: 'Consultation', unitPrice: 500, quantity: 1, total: 500 },
+                { name: 'X-Ray', unitPrice: 1000, quantity: 1, total: 1000 },
+                { name: 'Blood Test', unitPrice: 750, quantity: 1, total: 750 },
+                { name: 'MRI Scan', unitPrice: 3500, quantity: 1, total: 3500 }
+            ];
+
+            // Calculate total
+            const total = billingItems.reduce((sum, item) => sum + item.total, 0);
+
+            if (invoiceId && billDate) {
+                generatePDF(invoiceId, billDate, billingItems, total);
+            } else {
+                alert('Please fill in all required fields.');
+            }
+        });
+
+        // Event listener for Print button
+        document.getElementById('print-button').addEventListener('click', function() {
+            window.print();
+        });
+
+        // Event listener for generating summary report
+        document.getElementById("generate-report").addEventListener('click', function() {
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            const reportInvoiceId = document.getElementById('report-invoice-id').value;
+
+            if (startDate && endDate) {
+                // Simulate generating report summary logic
+                alert(`Generating report from ${startDate} to ${endDate}${reportInvoiceId ? ` for Invoice ID: ${reportInvoiceId}` : ''}`);
+                // Here, you can add logic to fetch data and display it accordingly
+            } else {
+                alert('Please provide a valid date range.');
+            }
+        });
+    </script>
+</body>
+</html>

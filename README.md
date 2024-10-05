@@ -40,7 +40,7 @@ A cryptographic hash (sometimes called ‘digest’) is a kind of ‘signature�
 
 The client can store the data (patient data) using front end technology (ex web app). Before sending the data to either the blockchain or third party system the data is encrypted locally using AES and SHA-256 is used to generate a key.
 
-!(https://github.com/armaandeol/HeartBeats/blob/main/1.png)
+!(https://github.com/armaandeol/HeartBeats/blob/main/1.pngraw=true)
 
 
  ## Working

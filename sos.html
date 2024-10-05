@@ -1,189 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SOS Page</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Arial', sans-serif;
-      background: #000000; /* Dark background for contrast */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .sos-container {
-      background-color: #ff3b3b; /* Red background for alert */
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      padding: 40px;
-      width: 400px;
-      max-width: 90%;
-      text-align: center;
-      border: 2px solid #ff5f6d;
-      animation: pulse 1.5s infinite ease-in-out;
-      color: white; /* Make text white for readability */
-    }
-    .sos-header {
-      color: #ffffff; /* White header text */
-      font-size: 3em;
-      font-weight: bold;
-      margin-bottom: 20px;
-      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Enhanced shadow for better visibility */
-    }
-    .sos-message {
-      font-size: 1.3em;
-      margin-bottom: 30px;
-      color: #f1f1f1; /* Softer white for message text */
-    }
-    .timer {
-      font-size: 2.5em;
-      color: #ffffff; /* White for timer */
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-    .cancel-btn {
-      background-color: #f44336;
-      color: white;
-      border: none;
-      padding: 15px 30px;
-      font-size: 1.2em;
-      font-weight: bold;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    .cancel-btn:hover {
-      background-color: #d32f2f;
-    }
-    .cancel-btn:disabled {
-      background-color: grey;
-      cursor: not-allowed;
-    }
-    /* Progress bar styling */
-    .progress-bar-container {
-      background-color: #ddd;
-      border-radius: 25px;
-      margin-bottom: 20px;
-    }
-    .progress-bar {
-      width: 100%;
-      height: 20px;
-      background-color: #ff5f6d;
-      border-radius: 25px;
-    }
-    /* Emergency contacts as stylish buttons */
-    .contact-btn {
-      display: block;
-      margin: 15px auto;
-      background-color: #ff5f6d;
-      color: white;
-      border: none;
-      padding: 12px 25px;
-      font-size: 1.2em;
-      font-weight: bold;
-      border-radius: 50px;
-      cursor: pointer;
-      text-decoration: none;
-      width: 80%;
-      transition: background-color 0.3s ease;
-    }
-    .contact-btn:hover {
-      background-color: #d43b50;
-    }
-    /* Dynamic background animation */
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.05);
-      }
-      100% {
-        transform: scale(1);
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOS Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to bottom right, #111, #333);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            transition: background-color 0.5s;
+            overflow: hidden;
+        }
+
+        .sos-container, .confirmation-container {
+            background-color: rgba(255, 59, 59, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            padding: 40px;
+            width: 400px;
+            max-width: 90%;
+            text-align: center;
+            border: 2px solid #ff5f6d;
+            animation: pulse 1.5s infinite ease-in-out;
+            transition: transform 0.3s;
+        }
+
+        .sos-container:hover, .confirmation-container:hover {
+            transform: scale(1.02);
+        }
+
+        .sos-header {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+        }
+
+        .sos-message, .confirmation-message {
+            font-size: 1.4em;
+            margin-bottom: 30px;
+        }
+
+        .timer {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #ffd700; /* Golden color for emphasis */
+        }
+
+        .cancel-btn, .back-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .cancel-btn:hover, .back-btn:hover {
+            background-color: #d32f2f;
+            transform: scale(1.05);
+        }
+
+        .contact-btn {
+            display: block;
+            margin: 15px auto;
+            background-color: #ff5f6d;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            width: 80%;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .contact-btn:hover {
+            background-color: #d43b50;
+            transform: scale(1.05);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        #canvas {
+            width: 100px;
+            height: 100px;
+            margin: 20px auto;
+            background: transparent;
+        }
+    </style>
 </head>
 <body>
 
-<div class="sos-container">
-  <h1 class="sos-header">SOS Alert</h1>
-  <p class="sos-message">Emergency detected! Redirecting in <span class="timer" id="timer">5</span> seconds...</p>
-  
-  <!-- Progress bar -->
-  <div class="progress-bar-container">
-    <div id="progressBar" class="progress-bar"></div>
-  </div>
+<div class="sos-container" id="sosContainer">
+    <h1 class="sos-header">🚨 SOS Alert</h1>
+    <p class="sos-message">Emergency detected! Redirecting in <span class="timer" id="timer">5</span> seconds...</p>
+    
+    <canvas id="canvas"></canvas>
 
-  <button id="cancelBtn" class="cancel-btn" onclick="cancelRedirect()">Cancel SOS</button>
-  
-  <!-- Stylish Emergency contact buttons -->
-  <a href="tel:7428512005" class="contact-btn">Call Contact 1</a>
-  <a href="tel:9667660734" class="contact-btn">Call Contact 2</a>
+    <button id="cancelBtn" class="cancel-btn" onclick="cancelRedirect()">Cancel SOS</button>
+    
+    <a href="tel:7428512005" class="contact-btn">📞 Call Contact 1</a>
+    <a href="tel:9667660734" class="contact-btn">📞 Call Contact 2</a>
 
-  <!-- Display current time -->
-  <p id="time"></p>
+    <button class="contact-btn" onclick="shareLocation()">📍 Share Location</button>
+
+    <audio id="sosSound" autoplay loop>
+        <source src="alarm.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
 </div>
 
-<audio id="sosSound" autoplay loop>
-  <source src="alarm.mp3" type="audio/mp3">
-  Your browser does not support the audio element.
-</audio>
+<div class="confirmation-container" id="confirmationContainer" style="display: none;">
+    <h1 class="sos-header">🚨 SOS Alert Sent!</h1>
+    <p class="confirmation-message">Your geolocation has been sent to emergency contacts and the nearest hospital.</p>
+    <button class="back-btn" onclick="goBack()">Go Back to SOS Page</button>
+</div>
 
 <script>
-  let countdown = 5;
-  let timerInterval = setInterval(() => {
-    countdown--;
-    document.getElementById("timer").textContent = countdown;
+    let countdown = 5;
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
 
-    // Update progress bar
-    document.getElementById('progressBar').style.width = (countdown * 20) + '%';
+    let timerInterval = setInterval(() => {
+        countdown--;
+        document.getElementById("timer").textContent = countdown;
 
-    if (countdown === 0) {
-      clearInterval(timerInterval);
-      window.location.href = "emergency-page.html"; // Redirect to the emergency page
-    }
-  }, 1000);
+        // Draw the circular timer
+        drawCircularTimer(countdown);
 
-  // Cancel redirect function
-  function cancelRedirect() {
-    clearInterval(timerInterval);
-    document.getElementById("timer").textContent = "Cancelled";
-    document.getElementById("cancelBtn").disabled = true;
-    document.getElementById("cancelBtn").textContent = "SOS Cancelled";
-    alert("SOS Cancelled!");
-
-    // Stop alarm sound
-    document.getElementById("sosSound").pause();
-    document.getElementById("sosSound").currentTime = 0;
-
-    // Stop vibration
-    navigator.vibrate(0);
-  }
-
-  // Vibrate during countdown
-  if (navigator.vibrate) {
-    let vibrateInterval = setInterval(() => {
-      navigator.vibrate([500, 300, 500]);
+        if (countdown === 0) {
+            clearInterval(timerInterval);
+            sendGeolocation(); // Call to send geolocation
+        }
     }, 1000);
 
-    setTimeout(() => clearInterval(vibrateInterval), 5000);
-  }
+    function drawCircularTimer(time) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const radius = 40;
+        const x = canvas.width / 2;
+        const y = canvas.height / 2;
+        const endAngle = (2 * Math.PI * (5 - time)) / 5; 
+        ctx.beginPath();
+        ctx.arc(x, y, radius, -Math.PI / 2, endAngle - Math.PI / 2);
+        ctx.lineWidth = 10;
+        ctx.strokeStyle = '#ffd700'; // Golden color for progress
+        ctx.stroke();
+        ctx.closePath();
+    }
 
-  // Display the current time and date
-  function updateTime() {
-    const currentTime = new Date().toLocaleString();
-    document.getElementById('time').textContent = `Time: ${currentTime}`;
-  }
-  updateTime();
-  setInterval(updateTime, 1000); // Update every second
+    function cancelRedirect() {
+        clearInterval(timerInterval);
+        document.getElementById("timer").textContent = "Cancelled";
+        document.getElementById("cancelBtn").disabled = true;
+        document.getElementById("cancelBtn").textContent = "SOS Cancelled";
+        alert("SOS Cancelled!");
+
+        // Stop alarm sound
+        document.getElementById("sosSound").pause();
+        document.getElementById("sosSound").currentTime = 0;
+
+        // Stop vibration
+        navigator.vibrate(0);
+    }
+
+    function shareLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const { latitude, longitude } = position.coords;
+                // You would send this location to your server or emergency contacts
+                alert(Your current location: Latitude: ${latitude}, Longitude: ${longitude});
+            }, (error) => {
+                console.error(error);
+                alert('Unable to retrieve location. Please check your device settings.');
+            });
+        } else {
+            alert('Geolocation is not supported by this browser.');
+        }
+    }
+
+    function sendGeolocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const { latitude, longitude } = position.coords;
+                // Here you can implement the logic to send this information
+                console.log(Location sent: Latitude: ${latitude}, Longitude: ${longitude});
+                // Display confirmation message
+                showConfirmation();
+            }, (error) => {
+                console.error(error);
+                alert('Unable to retrieve location. Please check your device settings.');
+                showConfirmation(); // Show confirmation even if location fails
+            });
+        } else {
+            alert('Geolocation is not supported by this browser.');
+            showConfirmation(); // Show confirmation if geolocation is not supported
+        }
+    }
+
+    function showConfirmation() {
+        document.getElementById("sosContainer").style.display = "none";
+        document.getElementById("confirmationContainer").style.display = "block";
+    }
+
+    function goBack() {
+        window.location.reload(); // Reload the page to reset to SOS
+    }
 </script>
 
 </body>

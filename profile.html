@@ -9,10 +9,10 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #e9ecef; /* Light background */
+            background-color: #fffffb; /* Light background */
         }
         .container {
-            background-color: #ffffff; /* White background for the container */
+            background-color: #fffffb; /* White background for the container */
             padding: 20px;
             max-width: 400px;
             margin: 20px auto;
@@ -30,7 +30,7 @@
             color: #007bff; /* Blue color for the icon */
         }
         .header .edit {
-            color: #dc3545; /* Red color for edit text */
+            color: #ff0019; /* Red color for edit text */
             font-size: 16px;
             cursor: pointer; /* Make the edit text clickable */
         }
@@ -39,7 +39,7 @@
             text-align: left;
             margin-left: 10px;
             font-weight: bold;
-            color: #343a40; /* Dark gray for title */
+            color: #007bff; /* Dark gray for title */
         }
         .profile {
             display: flex;
@@ -190,15 +190,15 @@
         }
     </style>
 </head>
-<body>
-    <div class="container">
+<body style="background-color: #D9E1E8;"> <!-- Updated background color -->
+    <div class="container" style="background-color: #b8b8d1;"> <!-- Updated container color -->
         <div class="header">
             <a href="dashboard.html"><i class="fas fa-arrow-left"></i></a> <!-- Add link for back navigation -->
             <span class="title">Profile</span>
             <span class="edit" onclick="openEditModal()">Edit</span> <!-- Open edit modal -->
         </div>
         <div class="profile">
-            <img alt="Profile picture of a person" height="60" src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-RcpoXHkzChYnDbFAyeQ8tamr/user-ehrvabJ3DufsCu8YJ7PqY5gl/img-uJRuPj4YvgTktaYS0PhmT6AE.png?st=2024-09-29T00%3A38%3A19Z&amp;se=2024-09-29T02%3A38%3A19Z&amp;sp=r&amp;sv=2024-08-04&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2024-09-29T01%3A15%3A27Z&amp;ske=2024-09-30T01%3A15%3A27Z&amp;sks=b&amp;skv=2024-08-04&amp;sig=D4rgNcc256CWfYBhlJivTK3rC0dBhkvQG02%2B5U29fAY%3D" width="60"/>
+            <img alt="Profile picture of a person" height="60" src="phomto.png" width="60"/>
             <div class="profile-info">
                 <div class="name">Armaan Deol ( You )</div>
                 <div class="details">29/08/2004 - 20 Yrs old</div>
@@ -219,11 +219,11 @@
             </div>
             <div class="item">
                 <div class="label">Phone</div>
-                <div class="value">+1 456 789 0234</div>
+                <div class="value">+91 9914758111</div>
             </div>
             <div class="item">
                 <div class="label">Address</div>
-                <div class="value">123 Elm Street, Springfield</div>
+                <div class="value">43/A kailash Enclave</div>
             </div>
             <div class="item">
                 <div class="label">Gender</div>
@@ -256,7 +256,7 @@
             </div>
             <div class="item">
                 <div class="label">Chronic Illnesses</div>
-                <div class="value">Asthma</div>
+                <div class="value">None</div>
             </div>
         </div>
 
@@ -289,12 +289,12 @@
             <div class="title">Health Trends</div>
             <div class="trends">
                 <div class="trend">
-                    <img alt="Blood Pressure" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Blood_Pressure.svg/1024px-Blood_Pressure.svg.png"/>
+                    <img alt="Blood Pressure" src="batraa.png"/>
                     <div class="percentage">120/80</div>
                     <div class="status">Normal</div>
                 </div>
                 <div class="trend">
-                    <img alt="Glucose" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Glucose_Icon.svg/1024px-Glucose_Icon.svg.png"/>
+                    <img alt="Glucose" src="batra.png">
                     <div class="percentage">90 mg/dL</div>
                     <div class="status">Normal</div>
                 </div>
@@ -305,7 +305,6 @@
         <div class="lab-history">
             <div class="title">Lab History</div>
             <div class="item">
-                <img alt="Blood Test" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Blood_Test_Icon.svg/1024px-Blood_Test_Icon.svg.png"/>
                 <div class="details">
                     <div class="name">Complete Blood Count</div>
                     <div class="lab">LabCorp</div>
@@ -313,7 +312,7 @@
                 <div class="price">$45</div>
             </div>
             <div class="item">
-                <img alt="X-Ray" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/X-ray_icon.svg/1024px-X-ray_icon.svg.png"/>
+    
                 <div class="details">
                     <div class="name">Chest X-Ray</div>
                     <div class="lab">Quest Diagnostics</div>

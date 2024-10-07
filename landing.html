@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="stylesss.css">
+    <title>HealthCare Connect | Patient Portal</title>
+</head>
+
+<body>
+
+    <div class="container" id="container">
+        <div class="form-container sign-up">
+            <form>
+                <h1 style="font-size: 18px;">Features of HeartBeats</h1>
+                <ul class="feature-list" style="font-size: 12px;">
+                    <li class="feature-item">Create and manage patient accounts</li>
+                    <li class="feature-item">Book appointments with healthcare providers</li>
+                    <li class="feature-item">Receive important health notifications</li>
+                    <li class="feature-item">Access health records securely</li>
+                    <li class="feature-item">Communicate with healthcare providers</li>
+                </ul>
+                <a href="index.html" class="btn-sos text-white px-4 py-2 rounded-full hover:bg-red-700 transition duration-200" aria-label="Register Button">Register</a>
+                <style>
+                    .feature-list {
+                        list-style-type: none;
+                        padding: 0;
+                    }
+
+                    .feature-item {
+                        background: linear-gradient(135deg, #e2e2e2, #c9d6ff);
+                        margin: 10px 0;
+                        padding: 8px; /* Adjusted padding */
+                        border-radius: 8px;
+                        transition: transform 0.3s, box-shadow 0.3s;
+                        font-size: 12px; /* Smaller font size */
+                    }
+
+                    .feature-item:hover {
+                        transform: scale(1.05);
+                        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                    }
+                </style>
+            </form>
+        </div>
+        <div class="form-container sign-in">
+            <form>
+                <h1>Patient Login</h1>
+                <input type="email" placeholder="Email or Patient ID">
+                <input type="password" placeholder="Password">
+                <a href="#">Forgot Your Password?</a>
+                <a href="dashboard.html" class="button">Login</a>                   
+            </form>
+        </div>
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>Welcome Back!</h1>
+                    <p>Log in to access your health records, upcoming appointments.</p>
+                    <button class="hidden" id="login">Login</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>New to HeartBeats?</h1>
+                    <p>Register now to book appointments, receive important health notifications, and communicate with your healthcare providers.</p>
+                    <button class="hidden" id="register">Register</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

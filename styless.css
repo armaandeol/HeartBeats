@@ -1,0 +1,135 @@
+/* Importing Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+/* General Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #fffffb; /* Light background for a healthcare feel */
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    background: #b8b8d1;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s ease-in-out; /* Fade-in effect for the container */
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+h1 {
+    text-align: center;
+    color: #1c2836; /* Teal color for headings */
+    margin-bottom: 20px;
+}
+
+/* Floating Label Styles */
+.form-group {
+    position: relative;
+    margin-bottom: 30px; /* Increased margin for spacing between inputs */
+}
+
+input[type="text"],
+input[type="date"],
+input[type="tel"],
+input[type="email"],
+select {
+    width: 100%;
+    padding: 10px;
+    margin: 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+input:focus,
+select:focus,
+#patientID:focus,
+#patientName:focus,
+#diagnosis:focus,
+#symptom:focus {
+    outline: none;
+    border-width: 2px;
+    border-style: solid;
+    animation: movingGradient 3s linear infinite;
+    box-shadow: 0 0 5px rgba(255, 107, 107, 0.3), 0 0 5px rgba(78, 205, 196, 0.3), 0 0 5px rgba(69, 183, 209, 0.3); /* Glowing effect matching gradient colors */
+}
+
+@keyframes movingGradient {
+    0% {
+        border-image: linear-gradient(to right, #0f0584, #1871d6, #28969e) 1;
+    }
+    33% {
+        border-image: linear-gradient(to right, #0f0584, #1871d6, #28969e) 1;
+    }
+    66% {
+        border-image: linear-gradient(to right, #0f0584, #1871d6, #28969e) 1;
+    }
+    100% {
+        border-image: linear-gradient(to right, #0f0584, #1871d6, #28969e) 1;
+    }
+}
+
+/* Floating Label */
+label {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    color: #aaa;
+    transition: 0.2s ease all;
+    pointer-events: none;
+}
+
+input:focus + label,
+input:not(:placeholder-shown) + label,
+select:focus + label {
+    top: -14px;
+    left: 10px;
+    font-size: 12px;
+    color: #0d342f; /* Teal color for active label */
+}
+
+/* Button Styles */
+button {
+    background-color: #00796b; /* Teal */
+    color: white;
+    padding: 10px 15px;
+    margin: 10px 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #005b52; /* Darker teal on hover */
+}
+
+/* Status and Record Display */
+.status {
+    font-size: 14px;
+    color: #ff0000; /* Red for error messages */
+    text-align: center;
+}
+
+#recordDisplay {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}

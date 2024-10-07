@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Arogya Billing and Report System</title>
+    <title>Billing and Reports</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- jsPDF CDN -->
@@ -12,11 +12,11 @@
     <style>
         /* Custom styles to enhance the fancy and mind-blowing design */
         body {
-            background-color: #F4F7FA;
+            background-color: #ffffff;
         }
 
         .gradient-bg {
-            background: linear-gradient(90deg, #007BFF 0%, #0056b3 100%);
+            background: linear-gradient(90deg, #b8b8d1 50%, #5b5f97 100%);
         }
 
         .btn-animated {
@@ -28,14 +28,14 @@
         }
 
         .fancy-border {
-            border: 2px solid #007BFF;
+            border: 2px solid #5b5f97;
             border-radius: 8px;
             padding: 16px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .table-header {
-            background-color: #0056b3;
+            background-color: #b8b8d1;
             color: white;
         }
     </style>
@@ -44,7 +44,7 @@
 
     <!-- Page Header -->
     <header class="gradient-bg text-white text-center py-4 shadow-lg">
-        <h1 class="text-3xl font-bold uppercase">Arogya Billing and Report System</h1>
+        <h1 class="text-3xl font-bold uppercase">Billing and Reports</h1>
         <p class="text-sm">Providing fast and accurate billing and reporting for our patients</p>
     </header>
 
@@ -63,7 +63,7 @@
                     <input type="date" id="bill-date" class="border border-gray-300 rounded-lg w-full p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
             </div>
-            <button id="generate-report" class="btn-animated bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg mt-4">
+            <button id="generate-report" class="btn-animated bg-[#5b5f97] hover:bg-[#5b5f97 text-white font-semibold py-2 px-6 rounded-lg mt-4">
                 Generate Report
             </button>
         </section>
@@ -128,15 +128,38 @@
 
         <!-- Button Section -->
         <div class="flex justify-end mt-6 space-x-4">
-            <button class="btn-animated bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition" id="save-button">
+            <button class="btn-animated custom-save-btn text-black font-semibold py-2 px-6 rounded-lg transition" id="save-button">
                 Save
             </button>
-            <button class="btn-animated bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded-lg transition">
+            <button class="btn-animated custom-save-print-btn text-black font-semibold py-2 px-6 rounded-lg transition">
                 Save & Print
             </button>
-            <button class="btn-animated bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition" id="print-button">
+            <button class="btn-animated custom-print-btn text-black font-semibold py-2 px-6 rounded-lg transition" id="print-button">
                 Print
             </button>
+            <style>
+                .custom-save-btn {
+                    background-color: #5b5f97; /* Custom blue color */
+                }
+                .custom-save-btn:hover {
+                    background-color: transparent;
+                    border: 2px solid #5b5f97; /* Darker blue on hover */
+                }
+                .custom-save-print-btn {
+                    background-color: #b8b8d1; /* Custom green color */
+                }
+                .custom-save-print-btn:hover {
+                    background-color: #218838;
+                    border: 2px solid #218838 /* Darker green on hover */
+                }
+                .custom-print-btn {
+                    background-color: #5b5f97; /* Custom blue color */
+                }
+                .custom-print-btn:hover {
+                    background-color: transparent; /* Darker blue on hover */
+                    border: 2px solid #5b5f97;
+                }
+            </style>
         </div>
 
         <!-- Report Section -->
@@ -153,7 +176,7 @@
                     <input type="text" id="report-invoice-id" placeholder="INV-123456" class="border border-gray-300 rounded-lg w-full p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
             </div>
-            <button id="generate-report-summary" class="btn-animated bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg mt-4">
+            <button id="generate-report-summary" class="btn-animated bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg mt-4" style="background-color: #5b5f97; color: white;">
                 Generate Summary Report
             </button>
         </section>
@@ -238,3 +261,5 @@
     </script>
 </body>
 </html>
+
+

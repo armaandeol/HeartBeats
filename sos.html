@@ -191,6 +191,21 @@
 
         // Stop vibration
         navigator.vibrate(0);
+
+        // Show redirect timer
+        let redirectCountdown = 2; // 2 seconds countdown
+        const redirectMessage = document.createElement('p');
+        redirectMessage.textContent = `Redirecting you back to dashboard in ${redirectCountdown} seconds...`;
+        document.querySelector('.sos-container').appendChild(redirectMessage);
+
+        const redirectInterval = setInterval(() => {
+            redirectCountdown--;
+            redirectMessage.textContent = `Redirecting you back to dashboard in ${redirectCountdown} seconds...`;
+            if (redirectCountdown === 0) {
+                clearInterval(redirectInterval);
+                window.location.href = "dashboard.html"; // Redirect to dashboard.html
+            }
+        }, 1000);
     }
 
     function shareLocation() {
@@ -198,7 +213,7 @@
             navigator.geolocation.getCurrentPosition((position) => {
                 const { latitude, longitude } = position.coords;
                 // You would send this location to your server or emergency contacts
-                alert(Your current location: Latitude: ${latitude}, Longitude: ${longitude});
+                alert(`Your current location: Latitude: ${latitude}, Longitude: ${longitude}`); // Fixed template literal
             }, (error) => {
                 console.error(error);
                 alert('Unable to retrieve location. Please check your device settings.');
@@ -213,7 +228,7 @@
             navigator.geolocation.getCurrentPosition((position) => {
                 const { latitude, longitude } = position.coords;
                 // Here you can implement the logic to send this information
-                console.log(Location sent: Latitude: ${latitude}, Longitude: ${longitude});
+                console.log(`Location sent: Latitude: ${latitude}, Longitude: ${longitude}`); // Fixed template literal
                 // Display confirmation message
                 showConfirmation();
             }, (error) => {
@@ -233,7 +248,7 @@
     }
 
     function goBack() {
-        window.location.reload(); // Reload the page to reset to SOS
+        window.location.href = "dashboard.html"; // Redirect to dashboard.html
     }
 </script>
 

@@ -61,12 +61,13 @@
             height: 60px;
             border-radius: 50%;
             transition: transform 0.3s, background-color 0.3s;
-            background: linear-gradient(145deg, #0ea5e9, #0c4a6e);
+            background: #b8b8d1; // Changed to a valid color
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
         }
 
         .input-container button:hover {
             transform: scale(1.1);
+            background: #a6a6c1; // {{ edit_2 }} // Optional: Adjust hover color for better contrast
         }
 
         .chat-area {
@@ -91,7 +92,7 @@
         }
 
         .chat-area .message.user {
-            background-color: #0ea5e9;
+            background-color: #b8b8d1;
             color: white;
             align-self: flex-end;
         }
@@ -126,7 +127,7 @@
         }
 
         .navbar {
-            background: linear-gradient(145deg, #0c4a6e, #1d4ed8);
+            background: linear-gradient(145deg, #0c4a6e, #b8b8d1);
             padding: 10px 20px;
             display: flex;
             justify-content: space-between;
@@ -165,7 +166,7 @@
         .loading {
             display: none;
             font-size: 14px;
-            color: #0ea5e9;
+            color: #b8b8d1;
             text-align: center;
         }
     </style>
@@ -174,7 +175,7 @@
 <body>
     <!-- Navigation Bar -->
     <div class="navbar">
-        <h1 class="text-xl">Arogya Saarthi</h1>
+        <h1 class="text-xl">AI Advisor</h1>
         <div>
             <a href="#about" onclick="openModal()">About</a>
         </div>
@@ -211,7 +212,7 @@
         </div>
 
         <div class="mt-6">
-            <button id="continueBtn" class="bg-gradient-to-r from-blue-500 to-blue-700 text-white w-full py-3 rounded-lg animated-button shadow-lg">Continue with AI Advisor</button>
+            <button id="continueBtn" class="bg-gradient-to-r from-purple-600 to-purple-700 text-white w-full py-3 rounded-lg animated-button shadow-lg">Continue with AI Advisor</button>
         </div>
     </div>
 
@@ -226,7 +227,7 @@
         <div class="input-container mt-4">
             <input type="text" id="user-input" placeholder="Describe your symptoms..." required class="p-3 border border-gray-300 rounded-lg shadow-sm">
             <button onclick="sendMessage()" class="bg-blue-500 text-white p-3 rounded-lg shadow-lg">Send</button>
-            <button onclick="startVoiceInput()" class="bg-gray-500 text-white p-3 rounded-lg shadow-lg">🎤</button>
+            <button onclick="startVoiceInput()" class="bg-gray-500 text-white p-3 rounded-lg shadow-lg">🎤</button> // Ensure this button has a valid function
         </div>
     </div>
 

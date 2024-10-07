@@ -3,7 +3,7 @@ if (typeof window.ethereum !== 'undefined') {
     let contract;
 
     // Replace with your deployed contract address
-    const contractAddress = '0x1c41476d7158d511cfd1f3bd7f6bc30c2b032a72';
+    const contractAddress = 'Your Contract Address';
 
     // ABI for the smart contract
     const contractABI = [
@@ -145,7 +145,6 @@ if (typeof window.ethereum !== 'undefined') {
 } else {
     alert('Please install MetaMask to use this app.');
 }
-
 
 
 

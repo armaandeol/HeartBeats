@@ -7,7 +7,7 @@ A blockchain is a publicly-managed and verified record of transactional data. Al
 
 ## VIDEO DEMONSTRATION
 
-https://drive.google.com/file/d/1Vry23G2-zJgf2YHe4ChFTSy6dAJ1edAo/view?usp=drivesdk
+[Here's a Drive Link to a video Demonstration of our project](https://drive.google.com/file/d/19g17tUwWWa9KJnFRHImjcGpFs9vcTrxq/view?usp=drive_link)
 
 
 ## COMPONENTS

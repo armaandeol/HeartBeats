@@ -88,6 +88,22 @@
             font-size: 1.2rem;
             margin-bottom: 10px;
         }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 12px;
+            display: none;
+            margin-top: -15px;
+            margin-bottom: 15px;
+        }
+        
+        input:invalid + .error-message {
+            display: block;
+        }
+        
+        input:invalid {
+            border: 2px solid #e74c3c;
+        }
     </style>
 </head>
 
@@ -96,40 +112,49 @@
         <h1>Organ & Tissue Donation Form</h1>
         <p>Please fill out the following form to register your consent for organ and tissue donation. Your generosity could help save lives. All personal information will be kept confidential.</p>
         
-        <form action="/submit-donation" method="POST">
+        <form action="/submit-donation" method="POST" id="donationForm">
             <!-- Personal Information -->
             <section>
                 <h2>Personal Information</h2>
                 <label for="name">Full Name (as per ID)</label>
-                <input type="text" id="name" name="name" required placeholder="Enter your full legal name">
+                <input type="text" id="name" name="name" required pattern="[A-Za-z\s]+" placeholder="Enter your full legal name">
+                <span class="error-message">Please enter a valid name (letters only).</span>
 
                 <label for="dob">Date of Birth</label>
-                <input type="date" id="dob" name="dob" required>
+                <input type="date" id="dob" name="dob" required max="2007-01-01">
+                <span class="error-message">You must be at least 16 years old to register.</span>
 
                 <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" required placeholder="Your email address">
+                <input type="email" id="email" name="email" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" placeholder="Your email address">
+                <span class="error-message">Please enter a valid email address.</span>
 
                 <label for="phone">Phone Number</label>
-                <input type="tel" id="phone" name="phone" required placeholder="Your contact number">
+                <input type="tel" id="phone" name="phone" required pattern="[0-9+\-\s()]{10,15}" placeholder="Your contact number">
+                <span class="error-message">Please enter a valid phone number (min 10 digits).</span>
 
                 <label for="address">Residential Address</label>
-                <input type="text" id="address" name="address" required placeholder="Your full address">
+                <input type="text" id="address" name="address" required minlength="10" placeholder="Your full address">
+                <span class="error-message">Please enter your complete address (min 10 characters).</span>
 
                 <label for="idNumber">Government ID Number (e.g., SSN, Passport)</label>
-                <input type="text" id="idNumber" name="idNumber" required placeholder="ID Number">
+                <input type="text" id="idNumber" name="idNumber" required pattern="[A-Za-z0-9\-]+" placeholder="ID Number">
+                <span class="error-message">Please enter a valid ID number (letters, numbers, and hyphens only).</span>
             </section>
 
             <!-- Next of Kin Information -->
             <section>
                 <h2>Next of Kin Information</h2>
                 <label for="nextOfKinName">Next of Kin Full Name</label>
-                <input type="text" id="nextOfKinName" name="nextOfKinName" required placeholder="Name of closest family member">
+                <input type="text" id="nextOfKinName" name="nextOfKinName" required pattern="[A-Za-z\s]+" placeholder="Name of closest family member">
+                <span class="error-message">Please enter a valid name (letters only).</span>
 
                 <label for="nextOfKinPhone">Next of Kin Contact Number</label>
-                <input type="tel" id="nextOfKinPhone" name="nextOfKinPhone" required placeholder="Contact number of next of kin">
+                <input type="tel" id="nextOfKinPhone" name="nextOfKinPhone" required pattern="[0-9+\-\s()]{10,15}" placeholder="Contact number of next of kin">
+                <span class="error-message">Please enter a valid phone number (min 10 digits).</span>
 
                 <label for="nextOfKinRelationship">Relationship to Next of Kin</label>
                 <input type="text" id="nextOfKinRelationship" name="nextOfKinRelationship" required placeholder="Relationship (e.g., spouse, parent)">
+                <span class="error-message">Please specify the relationship.</span>
             </section>
 
             <!-- Medical History -->
@@ -180,12 +205,14 @@
                 <p>By submitting this form, I confirm that I have read and understood the Organ and Tissue Donation Agreement. I understand that my decision is legally binding and will be honored upon my death unless I choose to withdraw my consent. All personal data provided will be handled in accordance with privacy regulations and will not be shared with third parties without consent.</p>
                 
                 <label class="consent">
-                    <input type="checkbox" required> I agree to the terms and conditions of organ and tissue donation as outlined above.
+                    <input type="checkbox" required id="agreement"> I agree to the terms and conditions of organ and tissue donation as outlined above.
                 </label>
+                <span class="error-message" id="agreement-error">You must agree to the terms to continue.</span>
 
                 <label class="consent">
-                    <input type="checkbox" required> I confirm that I have discussed my decision with my next of kin, who is aware of my wishes.
+                    <input type="checkbox" required id="discussion"> I confirm that I have discussed my decision with my next of kin, who is aware of my wishes.
                 </label>
+                <span class="error-message" id="discussion-error">You must confirm that your next of kin is aware of your decision.</span>
             </section>
 
             <!-- Witness Signature -->
@@ -199,15 +226,91 @@
             </section>
 
             <!-- Submit Button -->
-            <form action="thankyou.html" method="POST">
+            <form action="thankyou.html" method="POST" id="finalSubmitForm">
                 <!-- Your form fields here -->
             
                 <!-- Submit Button -->
-                <button type="submit">Submit Donation Form</button>
+                <button type="submit" id="submitDonation">Submit Donation Form</button>
             </form>
         </form>
     </div>
     
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const donationForm = document.getElementById('donationForm');
+            const submitButton = document.getElementById('submitDonation');
+            
+            // Date validation - must be at least 16 years old
+            const dobInput = document.getElementById('dob');
+            dobInput.addEventListener('change', function() {
+                const dob = new Date(this.value);
+                const today = new Date();
+                let age = today.getFullYear() - dob.getFullYear();
+                const m = today.getMonth() - dob.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                    age--;
+                }
+                
+                if (age < 16) {
+                    this.setCustomValidity('You must be at least 16 years old');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+            
+            // Organ selection validation - at least one must be selected
+            const organCheckboxes = document.querySelectorAll('input[name="organ"]');
+            organCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', validateOrganSelection);
+            });
+            
+            function validateOrganSelection() {
+                const checked = document.querySelectorAll('input[name="organ"]:checked').length;
+                const errorElement = document.createElement('div');
+                errorElement.id = 'organ-error';
+                errorElement.className = 'error-message';
+                errorElement.textContent = 'Please select at least one organ or tissue for donation';
+                
+                const existingError = document.getElementById('organ-error');
+                if (existingError) {
+                    existingError.remove();
+                }
+                
+                if (checked === 0) {
+                    const lastCheckbox = organCheckboxes[organCheckboxes.length - 1];
+                    lastCheckbox.parentNode.after(errorElement);
+                    return false;
+                }
+                return true;
+            }
+            
+            // Form submission validation
+            submitButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Validate all inputs
+                const allInputs = donationForm.querySelectorAll('input[required], select[required]');
+                let isValid = true;
+                
+                allInputs.forEach(input => {
+                    if (!input.checkValidity()) {
+                        input.reportValidity();
+                        isValid = false;
+                    }
+                });
+                
+                // Validate organ selection
+                if (!validateOrganSelection()) {
+                    isValid = false;
+                }
+                
+                // If all validations pass, submit the form
+                if (isValid) {
+                    window.location.href = 'thankyou.html';
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

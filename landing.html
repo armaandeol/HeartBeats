@@ -7,51 +7,85 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="stylesss.css">
     <title>HealthCare Connect | Patient Portal</title>
+    
+    <!-- Updated Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        /* Additional styles for auth elements */
+        .auth-error {
+            color: #e74c3c;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 15px;
+            display: none;
+            background-color: rgba(231, 76, 60, 0.1);
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: -5px;
+            margin-bottom: 10px;
+            display: none;
+        }
+        
+        input:invalid + .error-message {
+            display: block;
+        }
+        
+        input:invalid {
+            border-color: #e74c3c;
+        }
+        
+        /* Ensure the registration form is visible when active */
+        .right-panel-active .form-container.sign-up {
+            opacity: 1;
+            z-index: 5;
+            animation: show 0.6s;
+        }
+    </style>
 </head>
 
 <body>
 
     <div class="container" id="container">
         <div class="form-container sign-up">
-            <form>
-                <h1 style="font-size: 18px;">Features of HeartBeats</h1>
-                <ul class="feature-list" style="font-size: 12px;">
-                    <li class="feature-item">Create and manage patient accounts</li>
-                    <li class="feature-item">Book appointments with healthcare providers</li>
-                    <li class="feature-item">Receive important health notifications</li>
-                    <li class="feature-item">Access health records securely</li>
-                    <li class="feature-item">Communicate with healthcare providers</li>
-                </ul>
-                <a href="index.html" class="btn-sos text-white px-4 py-2 rounded-full hover:bg-red-700 transition duration-200" aria-label="Register Button">Register</a>
-                <style>
-                    .feature-list {
-                        list-style-type: none;
-                        padding: 0;
-                    }
-
-                    .feature-item {
-                        background: linear-gradient(135deg, #e2e2e2, #c9d6ff);
-                        margin: 10px 0;
-                        padding: 8px; /* Adjusted padding */
-                        border-radius: 8px;
-                        transition: transform 0.3s, box-shadow 0.3s;
-                        font-size: 12px; /* Smaller font size */
-                    }
-
-                    .feature-item:hover {
-                        transform: scale(1.05);
-                        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-                    }
-                </style>
+            <form id="signupForm">
+                <h1 style="font-size: 18px;">Create Account</h1>
+                <div id="registerError" class="auth-error"></div>
+                
+                <input type="email" id="registerEmail" placeholder="Email Address" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+">
+                <div class="error-message" id="registerEmail-error">Please enter a valid email address</div>
+                
+                <input type="password" id="registerPassword" placeholder="Password" required minlength="6">
+                <div class="error-message" id="registerPassword-error">Password must be at least 6 characters</div>
+                
+                <input type="password" id="confirmPassword" placeholder="Confirm Password" required minlength="6">
+                <div class="error-message" id="confirmPassword-error">Passwords must match</div>
+                
+                <input type="text" id="fullName" placeholder="Full Name" required>
+                <div class="error-message" id="fullName-error">Please enter your full name</div>
+                
+                <button type="button" id="registerButton" class="button">Register</button>
+                <p class="mt-2 text-sm">For detailed medical profile, please use the <a href="index.html" class="text-blue-600">complete registration</a></p>
             </form>
         </div>
         <div class="form-container sign-in">
-            <form>
+            <form id="signinForm">
                 <h1>Patient Login</h1>
-                <input type="email" placeholder="Email or Patient ID">
-                <input type="password" placeholder="Password">
+                <div id="authError" class="auth-error"></div>
+                <input type="email" id="loginEmail" placeholder="Email or Patient ID" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+|^[A-Za-z0-9]+$">
+                <div class="error-message" id="loginEmail-error">Please enter a valid email or patient ID</div>
+                <input type="password" id="loginPassword" placeholder="Password" required minlength="6">
+                <div class="error-message" id="loginPassword-error">Password must be at least 6 characters</div>
                 <a href="#">Forgot Your Password?</a>
-                <a href="dashboard.html" class="button">Login</a>                   
+                <button type="button" id="loginButton" class="button">Login</button>                   
             </form>
         </div>
         <div class="toggle-container">
@@ -70,7 +104,320 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // Panel switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('container');
+            
+            // Get toggle buttons
+            const registerBtn = document.getElementById('register');
+            const loginBtn = document.getElementById('login');
+            
+            // Debug elements in the DOM
+            console.log('Register button exist:', !!registerBtn);
+            console.log('Login button exist:', !!loginBtn);
+            console.log('Container exists:', !!container);
+            
+            // Add click listeners
+            registerBtn.addEventListener('click', function() {
+                console.log('Register toggle clicked');
+                container.classList.add('right-panel-active');
+            });
+            
+            loginBtn.addEventListener('click', function() {
+                console.log('Login toggle clicked');
+                container.classList.remove('right-panel-active');
+            });
+            
+            // Add direct switch buttons for mobile
+            const signupFormTitle = document.querySelector('.sign-up h1');
+            const loginFormTitle = document.querySelector('.sign-in h1');
+            
+            // Create a "switch to login" link for mobile users
+            const switchToLoginLink = document.createElement('a');
+            switchToLoginLink.href = '#';
+            switchToLoginLink.textContent = 'Already have an account? Login';
+            switchToLoginLink.style.fontSize = '12px';
+            switchToLoginLink.style.display = 'block';
+            switchToLoginLink.style.marginTop = '10px';
+            switchToLoginLink.style.color = '#5b5f97';
+            
+            // Create a "switch to register" link for mobile users
+            const switchToRegisterLink = document.createElement('a');
+            switchToRegisterLink.href = '#';
+            switchToRegisterLink.textContent = 'Don\'t have an account? Register';
+            switchToRegisterLink.style.fontSize = '12px';
+            switchToRegisterLink.style.display = 'block';
+            switchToRegisterLink.style.marginTop = '10px';
+            switchToRegisterLink.style.color = '#5b5f97';
+            
+            // Add links after the form titles
+            document.getElementById('registerButton').after(switchToLoginLink);
+            document.getElementById('loginButton').after(switchToRegisterLink);
+            
+            // Add click listeners to new links
+            switchToLoginLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                container.classList.remove('right-panel-active');
+            });
+            
+            switchToRegisterLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                container.classList.add('right-panel-active');
+            });
+        });
+    </script>
+    <script>
+        // Add CSS for validation error messages
+        const style = document.createElement('style');
+        style.textContent = `
+            .error-message {
+                color: #e74c3c;
+                font-size: 12px;
+                margin-top: -10px;
+                margin-bottom: 10px;
+                display: none;
+            }
+            input:invalid + .error-message {
+                display: block;
+            }
+            input:invalid {
+                border-color: #e74c3c;
+            }
+        `;
+        document.head.appendChild(style);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Firebase configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyCHBQOrb3Gn9z-DOTppGvoMq4Cw8B36YRg",
+                authDomain: "hospital-ecosystem-2adca.firebaseapp.com",
+                projectId: "hospital-ecosystem-2adca",
+                storageBucket: "hospital-ecosystem-2adca.appspot.com",
+                messagingSenderId: "24213918095",
+                appId: "1:24213918095:web:88b0da9f676cc5d48e7bfa",
+                measurementId: "G-H42GG6D6R2"
+            };
+
+            // Initialize Firebase with compat version
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            
+            // Firebase services
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+            
+            // Set Firestore settings to avoid network timeouts
+            db.settings({
+                cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
+                ignoreUndefinedProperties: true
+            });
+            
+            console.log("Firebase initialized successfully");
+            
+            // Elements
+            const loginButton = document.getElementById('loginButton');
+            const authError = document.getElementById('authError');
+            
+            // Modified registration handler to work without Firestore
+            const registerButton = document.getElementById('registerButton');
+            if (registerButton) {
+                registerButton.addEventListener('click', function() {
+                    console.log('Register button clicked');
+                    
+                    const email = document.getElementById('registerEmail').value;
+                    const password = document.getElementById('registerPassword').value;
+                    const confirmPassword = document.getElementById('confirmPassword').value;
+                    const fullName = document.getElementById('fullName').value;
+                    const registerError = document.getElementById('registerError');
+                    
+                    // Clear previous errors
+                    registerError.style.display = 'none';
+                    
+                    // Log values for debugging (remove in production)
+                    console.log('Registration attempt with:', { email, fullName });
+                    
+                    // Validate form
+                    if (!email || !password || password.length < 6 || password !== confirmPassword || !fullName) {
+                        let errorMessage = 'Please check the following errors:';
+                        if (!email) errorMessage += ' Missing email.';
+                        if (!password) errorMessage += ' Missing password.';
+                        else if (password.length < 6) errorMessage += ' Password too short.';
+                        if (password !== confirmPassword) errorMessage += ' Passwords don\'t match.';
+                        if (!fullName) errorMessage += ' Missing name.';
+                        
+                        registerError.textContent = errorMessage;
+                        registerError.style.display = 'block';
+                        console.error('Validation error:', errorMessage);
+                        return;
+                    }
+                    
+                    // Show loading state
+                    registerButton.disabled = true;
+                    registerButton.textContent = 'Creating Account...';
+                    
+                    console.log('Starting Firebase createUserWithEmailAndPassword...');
+                    
+                    // Only create the auth account without Firestore for now
+                    auth.createUserWithEmailAndPassword(email, password)
+                        .then((userCredential) => {
+                            console.log('User account created:', userCredential.user.uid);
+                            
+                            // Update profile with displayName instead of Firestore
+                            return userCredential.user.updateProfile({
+                                displayName: fullName
+                            }).then(() => userCredential);
+                        })
+                        .then((userCredential) => {
+                            console.log('User profile updated successfully');
+                            // Instead of showing alert and requiring re-login, redirect directly
+                            console.log('Redirecting to dashboard...');
+                            window.location.href = 'dashboard.html';
+                        })
+                        .catch((error) => {
+                            console.error('Registration error:', error.code, error.message);
+                            
+                            let errorMsg = 'Registration failed: ';
+                            switch(error.code) {
+                                case 'auth/email-already-in-use':
+                                    errorMsg += 'This email is already registered.';
+                                    break;
+                                case 'auth/invalid-email':
+                                    errorMsg += 'Invalid email format.';
+                                    break;
+                                case 'auth/weak-password':
+                                    errorMsg += 'Password is too weak. Use at least 6 characters.';
+                                    break;
+                                case 'auth/network-request-failed':
+                                    errorMsg += 'Network error. Please check your connection.';
+                                    break;
+                                default:
+                                    errorMsg += error.message;
+                            }
+                            
+                            registerError.textContent = errorMsg;
+                            registerError.style.display = 'block';
+                        })
+                        .finally(() => {
+                            registerButton.disabled = false;
+                            registerButton.textContent = 'Register';
+                        });
+                });
+            } else {
+                console.error('Register button not found in the DOM');
+            }
+            
+            // Form validation function
+            function validateSigninForm() {
+                let isValid = true;
+                
+                // Email or ID validation
+                const email = document.getElementById('loginEmail');
+                if (!email.checkValidity()) {
+                    document.getElementById('loginEmail-error').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('loginEmail-error').style.display = 'none';
+                }
+                
+                // Password validation
+                const password = document.getElementById('loginPassword');
+                if (!password.value || password.value.length < 6) {
+                    document.getElementById('loginPassword-error').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('loginPassword-error').style.display = 'none';
+                }
+                
+                return isValid;
+            }
+            
+            // Login handler
+            loginButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Clear previous errors
+                authError.style.display = 'none';
+                
+                if (!validateSigninForm()) {
+                    return;
+                }
+                
+                // Get form values
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                // UI feedback
+                loginButton.disabled = true;
+                loginButton.textContent = 'Logging in...';
+                
+                // Sign in
+                auth.signInWithEmailAndPassword(email, password)
+                    .then(userCredential => {
+                        console.log('Login successful', userCredential.user.email);
+                        window.location.href = 'dashboard.html';
+                    })
+                    .catch(error => {
+                        console.error('Login error:', error.code, error.message);
+                        
+                        // Format user-friendly error message
+                        let errorMsg = 'Login failed: ';
+                        
+                        switch(error.code) {
+                            case 'auth/user-not-found':
+                                errorMsg += 'No account with this email exists.';
+                                break;
+                            case 'auth/wrong-password':
+                                errorMsg += 'Incorrect password.';
+                                break;
+                            case 'auth/invalid-email':
+                                errorMsg += 'Invalid email format.';
+                                break;
+                            case 'auth/too-many-requests':
+                                errorMsg += 'Too many failed attempts. Try again later.';
+                                break;
+                            case 'auth/invalid-login-credentials':
+                                errorMsg += 'Invalid email or password.';
+                                break;
+                            default:
+                                errorMsg += error.message;
+                        }
+                        
+                        // Show error
+                        authError.textContent = errorMsg;
+                        authError.style.display = 'block';
+                    })
+                    .finally(() => {
+                        // Reset button
+                        loginButton.disabled = false;
+                        loginButton.textContent = 'Login';
+                    });
+            });
+            
+            // Check if user is already logged in
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    console.log('User already logged in:', user.email);
+                }
+            });
+            
+            // Add a utility function to create test users (run in console)
+            window.createTestUser = async function(email, password) {
+                try {
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    console.log("Test user created successfully:", userCredential.user.email);
+                    return "Test user created! You can now log in with this account.";
+                } catch (error) {
+                    console.error("Error creating test user:", error);
+                    return "Error creating test user: " + error.message;
+                }
+            };
+            
+            // Instructions for creating a test user
+            console.log("To create a test user, open browser console and run: createTestUser('test@example.com', 'password123')");
+        });
+    </script>
 </body>
 
 </html>

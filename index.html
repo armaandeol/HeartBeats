@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Record System</title>
     <link rel="stylesheet" href="styless.css"> <!-- Link to CSS -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <div class="container">
@@ -105,12 +108,283 @@
         <div id="recordDisplay"></div>
 
     <div style="text-align: center; margin-top: 20px;">
-        <button type="button" onclick="location.href='dashboard.html'" class="btn-sos text-white px-4 py-2 rounded-full hover:bg-red-700 transition duration-200" aria-label="Register Button">
+        <button type="button" id="registerButton" class="btn-sos text-white px-4 py-2 rounded-full hover:bg-red-700 transition duration-200" aria-label="Register Button">
             Register
         </button>
+        <div id="authError" style="color: red; display: none; margin-top: 10px;"></div>
     </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
     <script src="test.js"></script>
+    <script>
+        // Form validation script
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('patientForm');
+            const submitButton = document.getElementById('submitRecord');
+            
+            // Add event listener to submit button
+            submitButton.addEventListener('click', function(e) {
+                if (!validateForm()) {
+                    e.preventDefault();
+                    return false;
+                }
+                // If validation passes, form submission can continue
+            });
+            
+            // Add validation styles
+            const styleEl = document.createElement('style');
+            styleEl.textContent = `
+                input:invalid, select:invalid {
+                    border: 2px solid red;
+                }
+                .error-message {
+                    color: red;
+                    font-size: 12px;
+                    margin-top: -15px;
+                    margin-bottom: 10px;
+                    display: none;
+                }
+                input:invalid + .error-message, select:invalid + .error-message {
+                    display: block;
+                }
+            `;
+            document.head.appendChild(styleEl);
+            
+            // Add error message elements after each input
+            const inputs = form.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.id = input.id + '-error';
+                errorDiv.textContent = 'Please enter a valid ' + input.placeholder || input.id;
+                input.insertAdjacentElement('afterend', errorDiv);
+            });
+            
+            // Validation function
+            function validateForm() {
+                let isValid = true;
+                
+                // Patient ID validation - required and alphanumeric
+                const patientID = document.getElementById('patientID');
+                if (!patientID.value.trim() || !/^[a-zA-Z0-9]+$/.test(patientID.value)) {
+                    document.getElementById('patientID-error').textContent = 'Patient ID must contain only letters and numbers';
+                    isValid = false;
+                }
+                
+                // Patient name validation - required and letters only
+                const patientName = document.getElementById('patientName');
+                if (!patientName.value.trim() || !/^[a-zA-Z\s]+$/.test(patientName.value)) {
+                    document.getElementById('patientName-error').textContent = 'Patient name must contain only letters';
+                    isValid = false;
+                }
+                
+                // Email validation
+                const emailAddress = document.getElementById('emailAddress');
+                if (emailAddress && !emailAddress.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailAddress.value)) {
+                    document.getElementById('emailAddress-error').textContent = 'Please enter a valid email address';
+                    isValid = false;
+                }
+                
+                // Phone validation
+                const contactNumber = document.getElementById('contactNumber');
+                if (contactNumber && !contactNumber.value.trim() || !/^\+?[0-9]{10,15}$/.test(contactNumber.value.replace(/[\s()-]/g, ''))) {
+                    document.getElementById('contactNumber-error').textContent = 'Please enter a valid phone number';
+                    isValid = false;
+                }
+                
+                // Emergency contact validation
+                const emergencyContactNumber = document.getElementById('emergencyContactNumber');
+                if (emergencyContactNumber && !emergencyContactNumber.value.trim() || !/^\+?[0-9]{10,15}$/.test(emergencyContactNumber.value.replace(/[\s()-]/g, ''))) {
+                    document.getElementById('emergencyContactNumber-error').textContent = 'Please enter a valid emergency contact number';
+                    isValid = false;
+                }
+                
+                return isValid;
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Firebase configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyCHBQOrb3Gn9z-DOTppGvoMq4Cw8B36YRg",
+                authDomain: "hospital-ecosystem-2adca.firebaseapp.com",
+                projectId: "hospital-ecosystem-2adca",
+                storageBucket: "hospital-ecosystem-2adca.appspot.com",
+                messagingSenderId: "24213918095",
+                appId: "1:24213918095:web:88b0da9f676cc5d48e7bfa",
+                measurementId: "G-H42GG6D6R2"
+            };
+
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+            
+            console.log("Firebase initialized successfully");
+
+            // Add password field to the form for registration
+            const emailAddressInput = document.getElementById('emailAddress');
+            if (emailAddressInput) {
+                const passwordGroup = document.createElement('div');
+                passwordGroup.className = 'form-group';
+                passwordGroup.innerHTML = `
+                    <input type="password" id="password" placeholder="" required minlength="6">
+                    <label for="password">Password</label>
+                `;
+                
+                // Insert password field after email field
+                emailAddressInput.parentNode.after(passwordGroup);
+                
+                // Add confirm password field
+                const confirmPasswordGroup = document.createElement('div');
+                confirmPasswordGroup.className = 'form-group';
+                confirmPasswordGroup.innerHTML = `
+                    <input type="password" id="confirmPassword" placeholder="" required minlength="6">
+                    <label for="confirmPassword">Confirm Password</label>
+                `;
+                
+                // Insert confirm password field after password field
+                passwordGroup.after(confirmPasswordGroup);
+            }
+
+            // Registration button handler
+            const registerButton = document.getElementById('registerButton');
+            const authError = document.getElementById('authError');
+            
+            registerButton.addEventListener('click', async function(e) {
+                e.preventDefault();
+                
+                // Hide any previous error messages
+                authError.style.display = 'none';
+                
+                // Check form validity
+                if (!validateRegistrationForm()) {
+                    return;
+                }
+                
+                // UI feedback
+                registerButton.disabled = true;
+                registerButton.textContent = 'Registering...';
+                
+                const email = document.getElementById('emailAddress').value;
+                const password = document.getElementById('password').value;
+
+                try {
+                    // Create user with email and password
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+                    
+                    console.log("User created successfully:", user.email);
+                    
+                    // Send email verification
+                    await user.sendEmailVerification();
+                    
+                    // Prepare patient data
+                    const patientData = {
+                        patientID: document.getElementById('patientID').value,
+                        name: document.getElementById('patientName').value,
+                        email: email,
+                        diagnosis: document.getElementById('diagnosis').value,
+                        treatment: document.getElementById('treatment').value,
+                        dateOfBirth: document.getElementById('dateOfBirth').value,
+                        gender: document.getElementById('gender').value,
+                        contactNumber: document.getElementById('contactNumber').value,
+                        homeAddress: document.getElementById('homeAddress').value,
+                        nationality: document.getElementById('nationality').value,
+                        emergencyContactName: document.getElementById('emergencyContactName').value,
+                        emergencyContactRelationship: document.getElementById('emergencyContactRelationship').value,
+                        emergencyContactNumber: document.getElementById('emergencyContactNumber').value,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    
+                    // Store patient data in Firestore
+                    await db.collection('patients').doc(user.uid).set(patientData);
+                    console.log("Patient data stored in Firestore");
+
+                    alert("Registration successful! Please check your email for verification.");
+                    
+                    // Redirect to dashboard after successful registration
+                    window.location.href = 'dashboard.html';
+                } catch (error) {
+                    console.error("Registration error:", error.code, error.message);
+                    
+                    // Format user-friendly error
+                    let errorMsg = 'Registration failed: ';
+                    
+                    switch(error.code) {
+                        case 'auth/email-already-in-use':
+                            errorMsg += 'This email is already registered.';
+                            break;
+                        case 'auth/invalid-email':
+                            errorMsg += 'Invalid email format.';
+                            break;
+                        case 'auth/weak-password':
+                            errorMsg += 'Password is too weak. Use at least 6 characters.';
+                            break;
+                        default:
+                            errorMsg += error.message;
+                    }
+                    
+                    // Display error message
+                    authError.textContent = errorMsg;
+                    authError.style.display = 'block';
+                    
+                    // Reset button
+                    registerButton.disabled = false;
+                    registerButton.textContent = 'Register';
+                }
+            });
+            
+            // Form validation for registration
+            function validateRegistrationForm() {
+                let isValid = true;
+                
+                // Get form elements
+                const email = document.getElementById('emailAddress');
+                const password = document.getElementById('password');
+                const confirmPassword = document.getElementById('confirmPassword');
+                
+                // Validate email
+                if (!email || !email.value || !email.checkValidity()) {
+                    authError.textContent = 'Please enter a valid email address';
+                    authError.style.display = 'block';
+                    isValid = false;
+                    return isValid;
+                }
+                
+                // Validate password
+                if (!password || !password.value || password.value.length < 6) {
+                    authError.textContent = 'Password must be at least 6 characters';
+                    authError.style.display = 'block';
+                    isValid = false;
+                    return isValid;
+                }
+                
+                // Validate password confirmation
+                if (password.value !== confirmPassword.value) {
+                    authError.textContent = 'Passwords do not match';
+                    authError.style.display = 'block';
+                    isValid = false;
+                    return isValid;
+                }
+                
+                return isValid;
+            }
+            
+            // Create a test user function (run this in console to create a test user)
+            window.createTestUser = async function(email, password) {
+                try {
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    console.log("Test user created successfully:", userCredential.user.email);
+                    return "Test user created! You can now log in with this account.";
+                } catch (error) {
+                    console.error("Error creating test user:", error);
+                    return "Error creating test user: " + error.message;
+                }
+            };
+            console.log("You can create a test user by running: createTestUser('test@example.com', 'password123')");
+        });
+    </script>
 </body>
 </html>

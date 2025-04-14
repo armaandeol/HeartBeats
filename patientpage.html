@@ -5,12 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor in 10 Minutes - Arogya Saarthi</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <!-- Add the Gemini API directly -->
+    <script type="module">
+        import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai";
+        window.GoogleGenerativeAI = GoogleGenerativeAI;
+    </script>
     <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #f59e0b;
+            --secondary-dark: #d97706;
+            --accent: #10b981;
+            --accent-dark: #059669;
+            --light-bg: #f3f4f6;
+            --light-text: #9ca3af;
+            --dark-text: #1f2937;
+        }
+        
         body {
-            background: linear-gradient(145deg, #e3f2fd, #bbdefb);
+            background: linear-gradient(145deg, #eff6ff, #e0f2fe);
             font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
         }
 
         .form-container {
@@ -29,7 +47,8 @@
         }
 
         .chatbox-container {
-            margin-top: 20px;
+            max-width: 800px;
+            margin: 20px auto;
             background: white;
             border-radius: 15px;
             padding: 25px;
@@ -40,67 +59,116 @@
             display: flex;
             justify-content: space-between;
             gap: 10px;
+            margin-top: 15px;
         }
 
         .input-container input {
             flex-grow: 1;
-            border: 2px solid #38bdf8;
+            border: 2px solid var(--primary);
             border-radius: 10px;
             padding: 12px;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
             font-size: 16px;
         }
 
         .input-container input:focus {
-            border-color: #0ea5e9;
+            border-color: var(--primary-dark);
             outline: none;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
         .input-container button {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            transition: transform 0.3s, background-color 0.3s;
-            background: #b8b8d1; // Changed to a valid color
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 0 20px;
+            font-weight: 500;
         }
 
         .input-container button:hover {
-            transform: scale(1.1);
-            background: #a6a6c1; // {{ edit_2 }} // Optional: Adjust hover color for better contrast
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .input-container button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .send-btn {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .send-btn:hover {
+            background: var(--primary-dark);
+        }
+        
+        .voice-btn {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .voice-btn:hover {
+            background: var(--secondary-dark);
         }
 
         .chat-area {
-            height: 350px;
+            height: 400px;
             overflow-y: auto;
-            border: 2px solid #38bdf8;
+            border: 1px solid #e5e7eb;
             border-radius: 12px;
             padding: 15px;
-            background: #f9fafb;
+            background: var(--light-bg);
             display: flex;
             flex-direction: column;
             gap: 15px;
-            font-size: 14px;
+            font-size: 15px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) #e5e7eb;
+        }
+        
+        .chat-area::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-area::-webkit-scrollbar-track {
+            background: #e5e7eb;
+            border-radius: 10px;
+        }
+        
+        .chat-area::-webkit-scrollbar-thumb {
+            background-color: var(--primary);
+            border-radius: 10px;
         }
 
         .chat-area .message {
-            max-width: 70%;
-            padding: 10px 15px;
-            border-radius: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             animation: fadeInUp 0.3s ease-in-out;
+            line-height: 1.5;
         }
 
         .chat-area .message.user {
-            background-color: #b8b8d1;
+            background-color: var(--primary);
             color: white;
             align-self: flex-end;
+            border-bottom-right-radius: 5px;
         }
 
         .chat-area .message.ai {
-            background-color: #d1fae5;
-            color: #333;
+            background-color: white;
+            color: var(--dark-text);
             align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .chat-area .message.ai strong {
+            color: var(--accent);
+            font-weight: 600;
         }
 
         @keyframes fadeInUp {
@@ -117,18 +185,20 @@
 
         h2 {
             text-align: center;
-            color: #1e3a8a;
+            color: var(--primary-dark);
             margin-bottom: 20px;
             font-family: 'Poppins', sans-serif;
-        }
-
-        label {
             font-weight: 600;
         }
 
+        label {
+            font-weight: 500;
+            color: var(--dark-text);
+        }
+
         .navbar {
-            background: linear-gradient(145deg, #0c4a6e, #b8b8d1);
-            padding: 10px 20px;
+            background: linear-gradient(145deg, var(--primary-dark), var(--primary));
+            padding: 12px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -141,6 +211,30 @@
             font-weight: 500;
             text-decoration: none;
             margin-left: 20px;
+            transition: all 0.2s;
+        }
+        
+        .navbar a.back-btn {
+            display: flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .navbar a.back-btn:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateX(-2px);
+        }
+        
+        .navbar a.about-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .navbar a.about-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .modal {
@@ -149,25 +243,139 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.6);
             display: none;
             align-items: center;
             justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal-content {
             background: white;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
             text-align: center;
+            max-width: 500px;
+            width: 90%;
+            animation: scaleIn 0.3s ease-out;
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .loading {
             display: none;
             font-size: 14px;
-            color: #b8b8d1;
+            color: var(--light-text);
+            padding: 8px;
             text-align: center;
+            border-radius: 20px;
+            background: var(--light-bg);
+            margin: 10px 0;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        
+        .animated-button {
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .animated-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .animated-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .animated-button:hover::after {
+            animation: ripple 1s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(20, 20);
+                opacity: 0;
+            }
+        }
+        
+        .health-tips {
+            background: linear-gradient(145deg, #f0fdfa, #ecfdf5);
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 20px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .health-tips h3 {
+            color: var(--accent-dark);
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+        
+        .health-tips p {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--dark-text);
+        }
+        
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .user-avatar {
+            background-color: var(--primary-dark);
+        }
+        
+        .ai-avatar {
+            background-color: var(--accent);
+        }
+        
+        .message-container {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
         }
     </style>
 </head>
@@ -175,34 +383,38 @@
 <body>
     <!-- Navigation Bar -->
     <div class="navbar">
-        <h1 class="text-xl">AI Advisor</h1>
+        <div class="flex items-center">
+            <a href="dashboard.html" class="back-btn flex items-center text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Dashboard
+            </a>
+        </div>
         <div>
-            <a href="#about" onclick="openModal()">About</a>
+            <a href="#about" onclick="openModal()" class="about-btn">About</a>
         </div>
     </div>
 
-    <!-- Patient Registration Form -->
-    <div class="form-container" id="registration">
-        <h2 class="text-3xl">Patient Registration</h2>
-
-        <div class="mt-4">
-            <label for="fullName">Full Name</label>
-            <input type="text" id="fullName" placeholder="Enter your full name" required class="w-full border-gray-300 p-2 rounded-lg shadow-sm">
+    <!-- Registration Form -->
+    <div class="form-container" id="registration" style="display: none;">
+        <h2>Patient Registration</h2>
+        <p class="text-center mb-4">Please fill in your information to get personalized healthcare recommendations.</p>
+        
+        <div class="grid grid-cols-1 gap-6">
+            <div>
+                <label for="fullName" class="text-gray-600">Full Name</label>
+                <input type="text" id="fullName" placeholder="Enter your full name" class="w-full p-3 mt-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500">
         </div>
 
-        <div class="mt-4">
-            <label for="phoneNumber">Phone Number</label>
-            <input type="tel" id="phoneNumber" placeholder="Enter your phone number" required class="w-full border-gray-300 p-2 rounded-lg shadow-sm">
-        </div>
-
-        <div class="mt-4 flex-container flex gap-4">
-            <div class="flex-1">
-                <label for="ageInput">Age</label>
-                <input type="number" id="ageInput" placeholder="Enter your age" min="0" required class="w-full border-gray-300 p-2 rounded-lg shadow-sm">
+            <div>
+                <label for="ageInput" class="text-gray-600">Age</label>
+                <input type="number" id="ageInput" min="1" max="120" placeholder="Enter your age" class="w-full p-3 mt-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500">
             </div>
-            <div class="flex-1">
-                <label for="gender">Biological Sex</label>
-                <select id="gender" required class="w-full border-gray-300 p-2 rounded-lg shadow-sm">
+            
+            <div>
+                <label for="gender" class="text-gray-600">Gender</label>
+                <select id="gender" class="w-full p-3 mt-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500">
                     <option value="" disabled selected>Select your gender</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
@@ -212,96 +424,282 @@
         </div>
 
         <div class="mt-6">
-            <button id="continueBtn" class="bg-gradient-to-r from-purple-600 to-purple-700 text-white w-full py-3 rounded-lg animated-button shadow-lg">Continue with AI Advisor</button>
+            <button id="continueBtn" class="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white w-full py-3 rounded-lg animated-button shadow-lg">Continue with AI Advisor</button>
         </div>
     </div>
 
     <!-- AI Advisor Chatbox -->
-    <div class="chatbox-container" id="chat" style="display: none;">
-        <h2><b>Arogya Saarthi - AI Advisor</b></h2>
-        <p class="text-center mb-4">Your virtual advisor for healthcare guidance and recommendations.</p>
+    <div class="chatbox-container" id="chat" style="display: block;">
+        <h2>Arogya Saarthi - AI Health Advisor</h2>
+        <p class="text-center mb-4 text-gray-600">Your virtual advisor for healthcare guidance and recommendations.</p>
+        
         <div class="chat-area" id="chat-area">
             <!-- Chat messages will appear here -->
         </div>
-        <div class="loading" id="loading">AI is typing...</div>
-        <div class="input-container mt-4">
-            <input type="text" id="user-input" placeholder="Describe your symptoms..." required class="p-3 border border-gray-300 rounded-lg shadow-sm">
-            <button onclick="sendMessage()" class="bg-blue-500 text-white p-3 rounded-lg shadow-lg">Send</button>
-            <button onclick="startVoiceInput()" class="bg-gray-500 text-white p-3 rounded-lg shadow-lg">🎤</button> // Ensure this button has a valid function
+        
+        <div class="loading" id="loading">AI is analyzing your symptoms...</div>
+        
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Describe your symptoms or ask a health question..." class="focus:ring-2 focus:ring-indigo-200">
+            <button onclick="sendMessage()" class="send-btn flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+            <button onclick="startVoiceInput()" class="voice-btn flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="health-tips">
+            <h3>Health Tip of the Day</h3>
+            <p>Stay hydrated by drinking at least 8 glasses of water daily. Proper hydration improves energy levels, brain function, and overall health.</p>
         </div>
     </div>
 
     <!-- Modal for About -->
     <div id="aboutModal" class="modal">
         <div class="modal-content">
-            <h2 class="text-2xl">About Arogya Saarthi</h2>
-            <p class="mt-2">Arogya Saarthi is your trusted AI advisor, helping you navigate healthcare and providing valuable information in real time.</p>
-            <button onclick="closeModal()" class="mt-4 bg-blue-500 text-white p-2 rounded-lg">Close</button>
+            <h2 class="text-2xl mb-4">About Arogya Saarthi</h2>
+            <p class="mb-4">Arogya Saarthi is your AI-powered healthcare advisor, helping you understand your symptoms, providing guidance, and suggesting appropriate medical specialists when needed.</p>
+            <p class="mb-4">This AI is designed to offer preliminary guidance only and is not a replacement for professional medical advice, diagnosis, or treatment.</p>
+            <button onclick="closeModal()" class="mt-4 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white py-2 px-6 rounded-lg animated-button">Close</button>
         </div>
     </div>
 
     <script>
-        document.getElementById('continueBtn').addEventListener('click', function () {
-            document.getElementById('registration').style.display = 'none';
-            document.getElementById('chat').style.display = 'block';
-        });
-
-        function sendMessage() {
-            const userInput = document.getElementById('user-input');
+        // Gemini API configuration
+        const API_KEY = "AIzaSyDhIOxDNLwPyVTyoflH7yJOxPGcSehQdAo";
+        let chatHistory = [];
+        
+        // Helper functions
+        function showMessage(text, isUser) {
             const chatArea = document.getElementById('chat-area');
-            const loading = document.getElementById('loading');
-
-            // Create user message
-            const userMessage = document.createElement('div');
-            userMessage.className = 'message user';
-            userMessage.textContent = userInput.value;
-            chatArea.appendChild(userMessage);
-
-            // Show loading message
-            loading.style.display = 'block';
-            chatArea.scrollTop = chatArea.scrollHeight; // Scroll to the bottom
-
-            // AI Response Logic
-            let aiResponse = "I'm here to help! Please tell me more about your symptoms.";
-            const messageLowerCase = userInput.value.toLowerCase();
-
-            if (messageLowerCase.includes("fever")) {
-                aiResponse = "Fever can be a sign of infection. It's important to monitor your temperature and stay hydrated. If it persists or is very high, consider seeing a doctor. You may want to visit an **infectious disease specialist**.";
-            } else if (messageLowerCase.includes("cold")) {
-                aiResponse = "For a cold, it's essential to rest, drink fluids, and consider over-the-counter medications for relief. If symptoms worsen, please seek medical advice. A **general physician** can help.";
-            } else if (messageLowerCase.includes("cough")) {
-                aiResponse = "Coughing can be caused by various factors, including allergies or infection. Stay hydrated and consider cough drops or syrups for relief. If it lasts more than a week, consult a doctor, preferably a **pulmonologist**.";
-            } else if (messageLowerCase.includes("headache")) {
-                aiResponse = "Headaches can result from stress, dehydration, or other factors. Rest, hydration, and over-the-counter pain relief can help. If headaches are frequent or severe, it might be wise to see a healthcare provider, such as a **neurologist**.";
-            } else if (messageLowerCase.includes("nausea")) {
-                aiResponse = "Nausea can be caused by various factors, including dietary choices, motion sickness, or infections. Try to sip clear fluids and rest. If it persists or is accompanied by vomiting, seek medical attention. You may consult a **gastroenterologist**.";
-            } else if (messageLowerCase.includes("fatigue")) {
-                aiResponse = "Fatigue can be a sign of many conditions, including stress, lack of sleep, or underlying health issues. It's essential to ensure you're getting enough rest and nutrition. If it continues, consider consulting a doctor, potentially a **general practitioner**.";
-            } else if (messageLowerCase.includes("diarrhea")) {
-                aiResponse = "Diarrhea can result from infections, food intolerances, or stress. Stay hydrated, as it's essential to replace lost fluids. If it lasts more than a couple of days or is severe, seek medical advice from a **gastroenterologist**.";
-            } else if (messageLowerCase.includes("chest pain")) {
-                aiResponse = "Chest pain can be serious. It may indicate a heart problem or other conditions. If you experience chest pain, especially if it's severe or accompanied by shortness of breath, seek emergency medical help immediately. A **cardiologist** should be consulted.";
-            } else if (messageLowerCase.includes("dizziness")) {
-                aiResponse = "Dizziness can be caused by dehydration, low blood pressure, or inner ear issues. Ensure you're hydrated and try to stand up slowly. If dizziness is persistent or severe, please consult a healthcare professional, possibly an **ENT specialist**.";
-            } else if (messageLowerCase.includes("sore throat")) {
-                aiResponse = "A sore throat can be due to infections or allergies. Gargling with salt water, staying hydrated, and using throat lozenges can provide relief. If it lasts more than a few days or is severe, consider seeing a doctor, ideally an **ENT specialist**.";
+            const messageContainer = document.createElement('div');
+            messageContainer.className = 'message-container';
+            
+            // Create avatar
+            const avatar = document.createElement('div');
+            avatar.className = `avatar ${isUser ? 'user-avatar' : 'ai-avatar'}`;
+            avatar.textContent = isUser ? 'U' : 'AI';
+            
+            // Create message div
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
+            
+            if (isUser) {
+                messageDiv.textContent = text;
+            } else {
+                // Process markdown-style bold text (** **) to actual HTML bold
+                const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                messageDiv.innerHTML = formattedText;
             }
-
-            // Simulate AI response
-            setTimeout(() => {
-                loading.style.display = 'none';
-                const aiMessage = document.createElement('div');
-                aiMessage.className = 'message ai';
-                aiMessage.textContent = aiResponse;
-                chatArea.appendChild(aiMessage);
-                chatArea.scrollTop = chatArea.scrollHeight; // Scroll to the bottom
-            }, 1500); // Simulate delay for AI response
-
-            userInput.value = ''; // Clear input field
+            
+            // Append elements
+            messageContainer.appendChild(avatar);
+            messageContainer.appendChild(messageDiv);
+            chatArea.appendChild(messageContainer);
+            
+            // Scroll to bottom
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+        
+        function showErrorMessage(message) {
+            showMessage(message, false);
+        }
+        
+        function showLoadingIndicator(visible) {
+            const loading = document.getElementById('loading');
+            loading.style.display = visible ? 'block' : 'none';
+        }
+        
+        // Initialize chat on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Page loaded, initializing chat");
+            
+            // Show welcome message
+            showMessage("Hello, I'm Arogya Saarthi, your AI healthcare advisor. How can I help you today? Please tell me about your symptoms or health concerns.", false);
+            
+            // Check if API is loaded
+            const checkAPI = setInterval(function() {
+                if (typeof GoogleGenerativeAI !== 'undefined') {
+                    console.log("Google AI API loaded successfully");
+                    clearInterval(checkAPI);
+                    // Enable the send button
+                    document.querySelector('.send-btn').disabled = false;
+                }
+            }, 500);
+            
+            // Set a timeout to stop checking after 10 seconds
+            setTimeout(function() {
+                clearInterval(checkAPI);
+                if (typeof GoogleGenerativeAI === 'undefined') {
+                    console.error("Google AI API failed to load");
+                    showErrorMessage("The AI service is not responding. Please refresh the page to try again.");
+                }
+            }, 10000);
+            
+            // Initially disable the send button until API is loaded
+            document.querySelector('.send-btn').disabled = true;
+            
+            // Add event listener for enter key
+            const userInput = document.getElementById('user-input');
+            userInput.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter' && !document.querySelector('.send-btn').disabled) {
+                    event.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            // Update health tip randomly
+            updateHealthTip();
+        });
+        
+        // Health tips array
+        const healthTips = [
+            "Stay hydrated by drinking at least 8 glasses of water daily. Proper hydration improves energy levels, brain function, and overall health.",
+            "Aim for 7-8 hours of quality sleep each night. Good sleep hygiene improves immunity, mental clarity, and emotional well-being.",
+            "Include colorful fruits and vegetables in your diet for essential vitamins and antioxidants that boost your immune system.",
+            "Regular physical activity for just 30 minutes a day can significantly reduce the risk of heart disease and improve mental health.",
+            "Practice deep breathing or meditation for 5-10 minutes daily to reduce stress and improve mental clarity.",
+            "Limit screen time before bedtime to improve sleep quality. Try reading a book instead of scrolling through your phone.",
+            "Regular health check-ups can detect potential issues early. Don't skip your annual physical examination.",
+            "Wash your hands frequently to prevent the spread of germs and reduce your chances of getting sick."
+        ];
+        
+        function updateHealthTip() {
+            const tipElement = document.querySelector('.health-tips p');
+            const randomTip = healthTips[Math.floor(Math.random() * healthTips.length)];
+            tipElement.textContent = randomTip;
+        }
+        
+        // Send message to Gemini API
+        async function sendMessage() {
+            const userInput = document.getElementById('user-input');
+            const userMessage = userInput.value.trim();
+            
+            // Don't proceed if the input is empty
+            if (!userMessage) return;
+            
+            // Show user message
+            showMessage(userMessage, true);
+            
+            // Clear input field
+            userInput.value = '';
+            
+            // Show loading indicator
+            showLoadingIndicator(true);
+            
+            try {
+                // Check if the API is loaded
+                if (typeof GoogleGenerativeAI === 'undefined') {
+                    throw new Error("AI API not loaded yet. Please try again in a few seconds.");
+                }
+                
+                // Initialize the Generative AI
+                const genAI = new GoogleGenerativeAI(API_KEY);
+                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                
+                // Build the chat context from history
+                const systemMessage = "You are Arogya Saarthi, an AI healthcare advisor. Provide helpful medical information and advice. Remember to always encourage users to seek professional medical help for serious symptoms. Include a suggestion for what type of specialist might be appropriate to consult based on symptoms described, but display this in bold using ** around the specialist name.";
+                
+                // Add system message at the beginning if this is first message
+                if (chatHistory.length === 0) {
+                    chatHistory.push({
+                        role: "user", 
+                        parts: [{ text: systemMessage }]
+                    });
+                    chatHistory.push({
+                        role: "model",
+                        parts: [{ text: "I understand my role. How can I help you today?" }]
+                    });
+                }
+                
+                // Add the new user message
+                chatHistory.push({
+                    role: "user",
+                    parts: [{ text: userMessage }]
+                });
+                
+                // Generate content from the model
+                const result = await model.generateContent({
+                    contents: chatHistory,
+                    generationConfig: {
+                        temperature: 0.4,
+                        maxOutputTokens: 800,
+                    }
+                });
+                
+                const response = result.response;
+                const aiResponse = response.text();
+                
+                // Add AI response to chat history
+                chatHistory.push({
+                    role: "model",
+                    parts: [{ text: aiResponse }]
+                });
+                
+                // Hide loading indicator and show response
+                showLoadingIndicator(false);
+                showMessage(aiResponse, false);
+                
+                // Update health tip occasionally
+                if (Math.random() > 0.7) {
+                    updateHealthTip();
+                }
+                
+            } catch (error) {
+                console.error("Error with AI:", error);
+                showLoadingIndicator(false);
+                showErrorMessage("I'm sorry, I encountered an error. Please try again later. Error: " + 
+                    (error.message || "Unknown error"));
+            }
         }
 
         function startVoiceInput() {
-            // Implement voice input functionality here
+            // Check if browser supports speech recognition
+            if ('webkitSpeechRecognition' in window) {
+                const recognition = new webkitSpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                
+                recognition.onstart = function() {
+                    document.getElementById('user-input').placeholder = "Listening...";
+                    document.querySelector('.voice-btn').style.backgroundColor = '#ef4444'; // Red color to indicate recording
+                };
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('user-input').value = transcript;
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    document.getElementById('user-input').placeholder = "Error in voice input. Try again.";
+                    document.querySelector('.voice-btn').style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--secondary');
+                };
+                
+                recognition.onend = function() {
+                    document.getElementById('user-input').placeholder = "Describe your symptoms or ask a health question...";
+                    document.querySelector('.voice-btn').style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--secondary');
+                    
+                    // If we got a result, send the message after a short delay
+                    if (document.getElementById('user-input').value.trim() !== '') {
+                        setTimeout(sendMessage, 500);
+                    }
+                };
+                
+                recognition.start();
+            } else {
+                alert("Sorry, your browser doesn't support speech recognition. Try using Chrome.");
+            }
         }
 
         function openModal() {
@@ -311,6 +709,32 @@
         function closeModal() {
             document.getElementById('aboutModal').style.display = 'none';
         }
+        
+        // Register continueBtn event listener 
+        document.addEventListener('DOMContentLoaded', function() {
+            const continueBtn = document.getElementById('continueBtn');
+            if (continueBtn) {
+                continueBtn.addEventListener('click', function() {
+                    // Get patient information
+                    const fullName = document.getElementById('fullName').value;
+                    const age = document.getElementById('ageInput').value;
+                    const gender = document.getElementById('gender').value;
+                    
+                    // Validate form
+                    if (!fullName || !age || !gender) {
+                        alert("Please fill in all fields");
+                        return;
+                    }
+                    
+                    // Hide registration form and show chat
+                    document.getElementById('registration').style.display = 'none';
+                    document.getElementById('chat').style.display = 'block';
+                    
+                    // Initialize chat with personalized message
+                    showMessage(`Hello ${fullName}! I'm your AI health advisor. How can I assist you today?`, false);
+                });
+            }
+        });
     </script>
 </body>
 

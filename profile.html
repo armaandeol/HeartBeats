@@ -1,9 +1,14 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>
         Profile
     </title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -191,6 +196,13 @@
     </style>
 </head>
 <body style="background-color: #D9E1E8;"> <!-- Updated background color -->
+    <div id="loading" style="display:flex; justify-content:center; align-items:center; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); z-index:999;">
+        <div style="background:white; padding:20px; border-radius:10px; text-align:center;">
+            <div style="border:4px solid #f3f3f3; border-top:4px solid #3498db; border-radius:50%; width:30px; height:30px; animation:spin 2s linear infinite; margin:0 auto;"></div>
+            <p style="margin-top:10px;">Loading profile data...</p>
+        </div>
+    </div>
+    
     <div class="container" style="background-color: #b8b8d1;"> <!-- Updated container color -->
         <div class="header">
             <a href="dashboard.html"><i class="fas fa-arrow-left"></i></a> <!-- Add link for back navigation -->
@@ -198,10 +210,10 @@
             <span class="edit" onclick="openEditModal()">Edit</span> <!-- Open edit modal -->
         </div>
         <div class="profile">
-            <img alt="Profile picture of a person" height="60" src="phomto.png" width="60"/>
+            <img alt="Profile picture of a person" height="60" src="phomto.png" width="60" id="profileImage"/>
             <div class="profile-info">
-                <div class="name">Armaan Deol ( You )</div>
-                <div class="details">29/08/2004 - 20 Yrs old</div>
+                <div class="name" id="profileName">Loading...</div>
+                <div class="details" id="profileDetails">Loading...</div>
             </div>
         </div>
         <div class="tabs">
@@ -215,32 +227,32 @@
         <div id="personal" class="info">
             <div class="item">
                 <div class="label">Email</div>
-                <div class="value">armaan.deol@jhu.edu</div>
+                <div class="value" id="profileEmail">Loading...</div>
             </div>
             <div class="item">
                 <div class="label">Phone</div>
-                <div class="value">+91 9914758111</div>
+                <div class="value" id="profilePhone">Loading...</div>
             </div>
             <div class="item">
                 <div class="label">Address</div>
-                <div class="value">43/A kailash Enclave</div>
+                <div class="value" id="profileAddress">Loading...</div>
             </div>
             <div class="item">
                 <div class="label">Gender</div>
-                <div class="value">Male</div>
+                <div class="value" id="profileGender">Loading...</div>
             </div>
             <div class="item">
                 <div class="label">Blood Group</div>
-                <div class="value">O+</div>
+                <div class="value" id="profileBloodGroup">Loading...</div>
                 <div class="verify">Verify</div>
             </div>
             <div class="item">
                 <div class="label">Height</div>
-                <div class="value">6'1"</div>
+                <div class="value" id="profileHeight">Loading...</div>
             </div>
             <div class="item">
                 <div class="label">Weight</div>
-                <div class="value">180 lbs</div>
+                <div class="value" id="profileWeight">Loading...</div>
             </div>
         </div>
 
@@ -248,15 +260,15 @@
         <div id="medical" class="info hidden">
             <div class="item">
                 <div class="label">Last Checkup</div>
-                <div class="value">05/10/2024</div>
+                <div class="value" id="lastCheckup">Loading...</div>
             </div>
             <div class="item">
                 <div class="label">Allergies</div>
-                <div class="value">Peanuts, Shellfish</div>
+                <div class="value" id="allergies">Loading...</div>
             </div>
             <div class="item">
                 <div class="label">Chronic Illnesses</div>
-                <div class="value">None</div>
+                <div class="value" id="chronicIllnesses">Loading...</div>
             </div>
         </div>
 
@@ -264,11 +276,11 @@
         <div id="social" class="info hidden">
             <div class="item">
                 <div class="label">Smoker</div>
-                <div class="value">No</div>
+                <div class="value" id="smoker">Loading...</div>
             </div>
             <div class="item">
                 <div class="label">Drinks Alcohol</div>
-                <div class="value">Occasionally</div>
+                <div class="value" id="alcohol">Loading...</div>
             </div>
         </div>
 
@@ -276,11 +288,11 @@
         <div id="family" class="info hidden">
             <div class="item">
                 <div class="label">Father</div>
-                <div class="value">Diabetes</div>
+                <div class="value" id="fatherHistory">Loading...</div>
             </div>
             <div class="item">
                 <div class="label">Mother</div>
-                <div class="value">Heart Disease</div>
+                <div class="value" id="motherHistory">Loading...</div>
             </div>
         </div>
 
@@ -290,13 +302,13 @@
             <div class="trends">
                 <div class="trend">
                     <img alt="Blood Pressure" src="batraa.png"/>
-                    <div class="percentage">120/80</div>
-                    <div class="status">Normal</div>
+                    <div class="percentage" id="bpValue">Loading...</div>
+                    <div class="status" id="bpStatus">Loading...</div>
                 </div>
                 <div class="trend">
                     <img alt="Glucose" src="batra.png">
-                    <div class="percentage">90 mg/dL</div>
-                    <div class="status">Normal</div>
+                    <div class="percentage" id="glucoseValue">Loading...</div>
+                    <div class="status" id="glucoseStatus">Loading...</div>
                 </div>
             </div>
         </div>
@@ -304,20 +316,15 @@
         <!-- Lab History Section -->
         <div class="lab-history">
             <div class="title">Lab History</div>
-            <div class="item">
-                <div class="details">
-                    <div class="name">Complete Blood Count</div>
-                    <div class="lab">LabCorp</div>
+            <div id="labHistoryContainer">
+                <!-- Lab history items will be loaded here -->
+                <div class="item">
+                    <div class="details">
+                        <div class="name">Loading...</div>
+                        <div class="lab">Loading...</div>
+                    </div>
+                    <div class="price">Loading...</div>
                 </div>
-                <div class="price">$45</div>
-            </div>
-            <div class="item">
-    
-                <div class="details">
-                    <div class="name">Chest X-Ray</div>
-                    <div class="lab">Quest Diagnostics</div>
-                </div>
-                <div class="price">$80</div>
             </div>
         </div>
 
@@ -328,23 +335,36 @@
                 <h2>Edit Profile</h2>
                 <form id="editForm">
                     <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" value="armaan.deol@jhu.edu"><br><br>
+                    <input type="email" id="email" name="email" value="" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" required>
+                    <span class="error-message">Please enter a valid email address</span><br><br>
+                    
                     <label for="phone">Phone:</label>
-                    <input type="tel" id="phone" name="phone" value="+1 456 789 0234"><br><br>
+                    <input type="tel" id="phone" name="phone" value="" pattern="[0-9+\-\s()]{10,15}" required>
+                    <span class="error-message">Please enter a valid phone number</span><br><br>
+                    
                     <label for="address">Address:</label>
-                    <input type="text" id="address" name="address" value="123 Elm Street, Springfield"><br><br>
+                    <input type="text" id="address" name="address" value="" minlength="10" required>
+                    <span class="error-message">Please enter a complete address (min 10 characters)</span><br><br>
+                    
                     <label for="gender">Gender:</label>
-                    <select id="gender" name="gender">
-                        <option value="Male" selected>Male</option>
+                    <select id="gender" name="gender" required>
+                        <option value="Male">Male</option>
                         <option value="Female">Female</option>
                         <option value="Other">Other</option>
                     </select><br><br>
+                    
                     <label for="bloodGroup">Blood Group:</label>
-                    <input type="text" id="bloodGroup" name="bloodGroup" value="O+"><br><br>
+                    <input type="text" id="bloodGroup" name="bloodGroup" value="" pattern="(A|B|AB|O)[+-]" required>
+                    <span class="error-message">Please enter a valid blood group (A+, B-, AB+, O-, etc.)</span><br><br>
+                    
                     <label for="height">Height:</label>
-                    <input type="text" id="height" name="height" value="6'1"><br><br>
+                    <input type="text" id="height" name="height" value="" pattern="[0-9]+'[0-9]+(\"|'')?|[0-9]+(cm|m)" required>
+                    <span class="error-message">Please enter a valid height (e.g., 6'1", 180cm)</span><br><br>
+                    
                     <label for="weight">Weight:</label>
-                    <input type="text" id="weight" name="weight" value="180 lbs"><br><br>
+                    <input type="text" id="weight" name="weight" value="" pattern="[0-9]+(kg|lbs|pounds)?" required>
+                    <span class="error-message">Please enter a valid weight (e.g., 180 lbs, 82kg)</span><br><br>
+                    
                     <button type="submit">Save Changes</button>
                 </form>
             </div>
@@ -353,6 +373,252 @@
     </div>
 
     <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhIOxDNLwPyVTyoflH7yJOxPGcSehQdAo",
+            authDomain: "your-app.firebaseapp.com",
+            projectId: "your-app-id",
+            storageBucket: "your-app.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abc123def456"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        
+        // Check Authentication and Redirect if Not Signed In
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                // User is signed in
+                console.log("User is signed in:", user.uid);
+                loadUserProfile(user.uid);
+            } else {
+                // No user is signed in, redirect to login
+                console.log("No user signed in, redirecting to login");
+                window.location.href = "landing.html";
+            }
+        });
+        
+        // Load User Profile Data
+        function loadUserProfile(userId) {
+            // Show loading indicator
+            document.getElementById('loading').style.display = 'flex';
+            
+            db.collection('users').doc(userId).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        console.log("User data:", data);
+                        
+                        // Populate personal information
+                        populatePersonalInfo(data);
+                        
+                        // Populate medical information
+                        populateMedicalInfo(data);
+                        
+                        // Populate social history
+                        populateSocialHistory(data);
+                        
+                        // Populate family history
+                        populateFamilyHistory(data);
+                        
+                        // Populate health trends
+                        populateHealthTrends(data);
+                        
+                        // Load lab history
+                        loadLabHistory(userId);
+                        
+                        // Populate form fields for editing
+                        populateEditForm(data);
+                    } else {
+                        console.log("No such user document!");
+                        alert("User profile not found. Please update your profile information.");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error getting user document:", error);
+                    alert("Error loading profile: " + error.message);
+                })
+                .finally(() => {
+                    // Hide loading indicator
+                    document.getElementById('loading').style.display = 'none';
+                });
+        }
+        
+        // Populate Personal Information Section
+        function populatePersonalInfo(data) {
+            // Profile name and details
+            document.getElementById('profileName').textContent = data.name || 'Name not provided';
+            
+            // Calculate age from birthdate if available
+            let ageText = '';
+            if (data.birthdate) {
+                const birthDate = new Date(data.birthdate);
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                
+                // Format birthdate as DD/MM/YYYY
+                const formattedDate = birthDate.toLocaleDateString('en-GB');
+                ageText = `${formattedDate} - ${age} Yrs old`;
+            } else {
+                ageText = 'Birth date not provided';
+            }
+            
+            document.getElementById('profileDetails').textContent = ageText;
+            
+            // Personal details
+            document.getElementById('profileEmail').textContent = data.email || 'Email not provided';
+            document.getElementById('profilePhone').textContent = data.phone || 'Phone not provided';
+            document.getElementById('profileAddress').textContent = data.address || 'Address not provided';
+            document.getElementById('profileGender').textContent = data.gender || 'Gender not specified';
+            document.getElementById('profileBloodGroup').textContent = data.bloodGroup || 'Not specified';
+            document.getElementById('profileHeight').textContent = data.height || 'Not specified';
+            document.getElementById('profileWeight').textContent = data.weight || 'Not specified';
+        }
+        
+        // Populate Medical Information Section
+        function populateMedicalInfo(data) {
+            const medical = data.medical || {};
+            document.getElementById('lastCheckup').textContent = medical.lastCheckup || 'No record';
+            document.getElementById('allergies').textContent = medical.allergies || 'None reported';
+            document.getElementById('chronicIllnesses').textContent = medical.chronicIllnesses || 'None reported';
+        }
+        
+        // Populate Social History Section
+        function populateSocialHistory(data) {
+            const social = data.social || {};
+            document.getElementById('smoker').textContent = social.smoker || 'Not specified';
+            document.getElementById('alcohol').textContent = social.alcohol || 'Not specified';
+        }
+        
+        // Populate Family History Section
+        function populateFamilyHistory(data) {
+            const family = data.family || {};
+            document.getElementById('fatherHistory').textContent = family.father || 'No history reported';
+            document.getElementById('motherHistory').textContent = family.mother || 'No history reported';
+        }
+        
+        // Populate Health Trends Section
+        function populateHealthTrends(data) {
+            const health = data.healthTrends || {};
+            
+            // Blood Pressure
+            const bp = health.bloodPressure || {};
+            document.getElementById('bpValue').textContent = bp.value || '120/80';
+            document.getElementById('bpStatus').textContent = bp.status || 'Normal';
+            
+            // Glucose
+            const glucose = health.glucose || {};
+            document.getElementById('glucoseValue').textContent = glucose.value || '90 mg/dL';
+            document.getElementById('glucoseStatus').textContent = glucose.status || 'Normal';
+        }
+        
+        // Load Lab History from Subcollection
+        function loadLabHistory(userId) {
+            const labHistoryContainer = document.getElementById('labHistoryContainer');
+            labHistoryContainer.innerHTML = ''; // Clear container
+            
+            db.collection('users').doc(userId).collection('labHistory')
+                .orderBy('date', 'desc')
+                .limit(5)
+                .get()
+                .then((querySnapshot) => {
+                    if (querySnapshot.empty) {
+                        labHistoryContainer.innerHTML = '<div class="item"><div class="details"><div class="name">No lab history available</div></div></div>';
+                        return;
+                    }
+                    
+                    querySnapshot.forEach((doc) => {
+                        const labData = doc.data();
+                        const labItem = document.createElement('div');
+                        labItem.className = 'item';
+                        labItem.innerHTML = `
+                            <div class="details">
+                                <div class="name">${labData.name || 'Unnamed Test'}</div>
+                                <div class="lab">${labData.lab || 'Unknown Lab'}</div>
+                            </div>
+                            <div class="price">${labData.price || '$0'}</div>
+                        `;
+                        labHistoryContainer.appendChild(labItem);
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error loading lab history:", error);
+                    labHistoryContainer.innerHTML = '<div class="item"><div class="details"><div class="name">Error loading lab history</div></div></div>';
+                });
+        }
+        
+        // Populate Edit Form with Current Data
+        function populateEditForm(data) {
+            document.getElementById('email').value = data.email || '';
+            document.getElementById('phone').value = data.phone || '';
+            document.getElementById('address').value = data.address || '';
+            
+            const genderSelect = document.getElementById('gender');
+            if (data.gender) {
+                for (let i = 0; i < genderSelect.options.length; i++) {
+                    if (genderSelect.options[i].value === data.gender) {
+                        genderSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            
+            document.getElementById('bloodGroup').value = data.bloodGroup || '';
+            document.getElementById('height').value = data.height || '';
+            document.getElementById('weight').value = data.weight || '';
+        }
+        
+        // Save Profile Updates to Firebase
+        function saveProfileUpdates(formData) {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("You must be logged in to update your profile.");
+                return;
+            }
+            
+            // Show loading indicator
+            document.getElementById('loading').style.display = 'flex';
+            
+            // Update user document in Firestore
+            db.collection('users').doc(user.uid).update({
+                email: formData.email,
+                phone: formData.phone,
+                address: formData.address,
+                gender: formData.gender,
+                bloodGroup: formData.bloodGroup,
+                height: formData.height,
+                weight: formData.weight,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+                console.log("Profile successfully updated!");
+                
+                // Refresh profile data
+                loadUserProfile(user.uid);
+                
+                // Close the modal
+                closeEditModal();
+                
+                // Show confirmation message
+                alert("Profile successfully updated!");
+            })
+            .catch((error) => {
+                console.error("Error updating profile:", error);
+                alert("Error updating profile: " + error.message);
+            })
+            .finally(() => {
+                document.getElementById('loading').style.display = 'none';
+            });
+        }
+        
+        // Tab Navigation
         function showTab(tab) {
             const tabs = ['personal', 'medical', 'social', 'family'];
             tabs.forEach(t => {
@@ -363,6 +629,7 @@
             });
         }
 
+        // Edit Modal Functions
         function openEditModal() {
             document.getElementById("editModal").style.display = "block";
         }
@@ -377,6 +644,75 @@
             if (event.target == modal) {
                 modal.style.display = "none";
             }
+        }
+        
+        // Form validation and submission
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add CSS for validation error messages
+            const style = document.createElement('style');
+            style.textContent = `
+                .error-message {
+                    color: #dc3545;
+                    font-size: 12px;
+                    display: none;
+                }
+                input:invalid + .error-message {
+                    display: block;
+                }
+                input:invalid {
+                    border: 2px solid #dc3545;
+                }
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            const editForm = document.getElementById('editForm');
+            
+            editForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate all required inputs
+                const inputs = editForm.querySelectorAll('input[required], select[required]');
+                let isValid = true;
+                
+                inputs.forEach(input => {
+                    if (!input.checkValidity()) {
+                        input.reportValidity();
+                        isValid = false;
+                    }
+                });
+                
+                if (isValid) {
+                    // Collect form data
+                    const formData = {
+                        email: document.getElementById('email').value,
+                        phone: document.getElementById('phone').value,
+                        address: document.getElementById('address').value,
+                        gender: document.getElementById('gender').value,
+                        bloodGroup: document.getElementById('bloodGroup').value,
+                        height: document.getElementById('height').value,
+                        weight: document.getElementById('weight').value
+                    };
+                    
+                    // Save updates to Firebase
+                    saveProfileUpdates(formData);
+                }
+            });
+        });
+        
+        // Sign Out Function
+        function signOut() {
+            firebase.auth().signOut().then(() => {
+                // Sign-out successful, redirect to login
+                window.location.href = "landing.html";
+            }).catch((error) => {
+                // An error happened
+                console.error("Error signing out:", error);
+                alert("Error signing out: " + error.message);
+            });
         }
     </script>
 </body>
